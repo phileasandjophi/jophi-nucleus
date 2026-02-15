@@ -3,78 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | Kinetic Substrate</title>
+    <title>Jophi Universe | Organic Substrate</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #050505; font-family: 'Inter', sans-serif; color: #fff; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Inter', sans-serif; color: #fff; }
         canvas { display: block; }
-        #overlay { position: absolute; top: 20px; left: 20px; z-index: 10; pointer-events: none; }
-        .hud-label { font-size: 0.8rem; letter-spacing: 0.2rem; text-transform: uppercase; color: #00f2ff; opacity: 0.7; }
-        .blur-gate { position: absolute; bottom: 20px; right: 20px; font-style: italic; opacity: 0.4; font-size: 0.7rem; }
+        #hud-top { position: absolute; top: 20px; left: 20px; z-index: 10; pointer-events: none; }
+        #hud-bottom { position: absolute; bottom: 20px; right: 20px; z-index: 10; pointer-events: none; text-align: right; }
+        .label { font-size: 0.7rem; letter-spacing: 0.15rem; text-transform: uppercase; color: #00f2ff; opacity: 0.6; margin-bottom: 4px; }
+        .definition { font-size: 0.6rem; letter-spacing: 0.05rem; color: #fff; opacity: 0.4; text-transform: none; }
     </style>
 </head>
 <body>
-    <div id="overlay">
-        <div class="hud-label">Substrate Status: Synchronized</div>
-        <div class="hud-label" id="particle-count">Points of Light: 1000</div>
+    <div id="hud-top">
+        <div class="label">B.L.U.E.E. Protocol (Bi-directional Ledger for Universal Ecological Expansion)</div>
+        <div class="definition">Substrate Status: Synchronized // Multi-Directional Flow: Active</div>
     </div>
-    <div class="blur-gate">Sensory Blur Active: View-Only Mode</div>
+    <div id="hud-bottom">
+        <div class="label">Points of Light: 1,000</div>
+        <div class="definition">Sensory Blur Active: View-Only Mode</div>
+    </div>
     <canvas id="universeCanvas"></canvas>
 
     <script>
         const canvas = document.getElementById('universeCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        const particleCount = 1000;
+        const particleCount = 450; 
 
-        window.addEventListener('resize', resizeCanvas);
-        function resizeCanvas() {
+        window.addEventListener('resize', resize);
+        function resize() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
-        resizeCanvas();
+        resize();
 
         class Particle {
-            constructor() {
-                this.reset();
-            }
+            constructor() { this.reset(); }
             reset() {
-                this.x = (Math.random() - 0.5) * canvas.width;
-                this.y = (Math.random() - 0.5) * canvas.height;
-                this.z = Math.random() * canvas.width; // Depth factor
-                this.size = 1.5;
-                this.color = Math.random() > 0.8 ? '#00f2ff' : '#ffffff';
-                this.velocity = 2 + Math.random() * 3; // Forward speed
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.z = Math.random() * canvas.width;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.vz = 0.5 + Math.random() * 1.5;
+                this.color = Math.random() > 0.9 ? '#fff' : (Math.random() > 0.5 ? '#00f2ff' : '#0077ff');
+                this.drift = Math.random() * 100;
             }
             update() {
-                this.z -= this.velocity; // Move toward viewer
+                this.z -= this.vz;
+                this.x += Math.sin(this.z * 0.005 + this.drift) * 0.8; 
+                this.y += Math.cos(this.z * 0.005 + this.drift) * 0.8;
                 if (this.z <= 0) this.reset();
             }
             draw() {
-                // Minority Report "Starfield" Projection
-                const x = (this.x / this.z) * (canvas.width / 2) + canvas.width / 2;
-                const y = (this.y / this.z) * (canvas.height / 2) + canvas.height / 2;
-                const s = (1 - this.z / canvas.width) * this.size * 5;
-                const opacity = (1 - this.z / canvas.width);
-
-                ctx.beginPath();
-                ctx.arc(x, y, s, 0, Math.PI * 2);
+                const scale = canvas.width / (this.z + 1);
+                const x2d = (this.x - canvas.width / 2) * scale + canvas.width / 2;
+                const y2d = (this.y - canvas.height / 2) * scale + canvas.height / 2;
+                const size = Math.max(0.1, (1 - this.z / canvas.width) * 3);
+                
+                ctx.globalAlpha = (1 - this.z / canvas.width);
                 ctx.fillStyle = this.color;
-                ctx.globalAlpha = opacity;
+                ctx.beginPath();
+                ctx.arc(x2d, y2d, size, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
 
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
+        for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+
+        function drawConnections() {
+            ctx.strokeStyle = '#00f2ff';
+            ctx.lineWidth = 0.2;
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p1 = particles[i];
+                    const p2 = particles[j];
+                    const dist = Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+                    
+                    if (dist < 60 && Math.abs(p1.z - p2.z) < 50) {
+                        const scale = canvas.width / (p1.z + 1);
+                        const x1 = (p1.x - canvas.width / 2) * scale + canvas.width / 2;
+                        const y1 = (p1.y - canvas.height / 2) * scale + canvas.height / 2;
+                        const x2 = (p2.x - canvas.width / 2) * scale + canvas.width / 2;
+                        const y2 = (p2.y - canvas.height / 2) * scale + canvas.height / 2;
+
+                        ctx.globalAlpha = (1 - p1.z / canvas.width) * 0.2;
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                        ctx.stroke();
+                    }
+                }
+            }
         }
 
         function animate() {
-            ctx.fillStyle = 'rgba(5, 5, 5, 0.2)'; // Dark Matter Gravity Trails
+            ctx.fillStyle = '#000';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
+            drawConnections();
+            particles.forEach(p => { p.update(); p.draw(); });
             requestAnimationFrame(animate);
         }
         animate();
