@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOPHI.NET | MMIR Dashboard</title>
+    <style>
+        :root { --substrate-blue: #001f3f; --glow: #0074D9; }
+        body { background: var(--substrate-blue); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            padding: 20px;
+            opacity: 0.4; /* The "Glass" effect */
+            filter: blur(2px);
+            transition: all 0.5s ease;
+        }
+        .metric-cell {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            text-align: center;
+        }
+        .metric-value { color: var(--glow); font-weight: bold; font-size: 1rem; }
+        .gate-overlay {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+            background: rgba(0,0,0,0.8);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid var(--glow);
+        }
+        input { padding: 10px; border-radius: 5px; border: none; width: 250px; }
+        button { background: var(--glow); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="gate-overlay">
+        <h2>jophi.net</h2>
+        <p>Monitor. Measure. Impact. Restore.</p>
+        <p><i>Enter the expansion or view as Guest.</i></p>
+        <input type="email" placeholder="email@domain.com">
+        <button onclick="alert('Syncing to Substrate...')">Sync</button>
+        <p><small style="text-decoration: underline; cursor: pointer;" onclick="document.querySelector('.grid-container').style.filter='none'; document.querySelector('.grid-container').style.opacity='1'; document.querySelector('.gate-overlay').style.display='none';">View Only Mode</small></p>
+    </div>
+
+    <div class="grid-container">
+        <div class="metric-cell"><span class="metric-value">98%</span>Ahimsa Compliance</div>
+        <div class="metric-cell"><span class="metric-value">4.2M</span>Restorative Flow</div>
+        <div class="metric-cell"><span class="metric-value">ACTIVE</span>B.L.U.E.E. Sync</div>
+        <div class="metric-cell"><span class="metric-value">100%</span>Botanical Purity</div>
+        <div class="metric-cell"><span class="metric-value">0%</span>Flotsam Detected</div>
+        <script>
+            const container = document.querySelector('.grid-container');
+            for(let i=0; i<45; i++) {
+                container.innerHTML += `<div class="metric-cell"><span class="metric-value">${(Math.random()*100).toFixed(1)}%</span>Expansion Index</div>`;
+            }
+        </script>
+    </div>
+
+</body>
+</html>
