@@ -3,70 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JOPHI.NET | MMIR Dashboard</title>
+    <title>Jophi Universe | Kinetic Substrate</title>
     <style>
-        :root { --substrate-blue: #001f3f; --glow: #0074D9; }
-        body { background: var(--substrate-blue); color: white; font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; }
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-            padding: 20px;
-            opacity: 0.4; /* The "Glass" effect */
-            filter: blur(2px);
-            transition: all 0.5s ease;
-        }
-        .metric-cell {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            height: 80px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            text-align: center;
-        }
-        .metric-value { color: var(--glow); font-weight: bold; font-size: 1rem; }
-        .gate-overlay {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            text-align: center;
-            background: rgba(0,0,0,0.8);
-            padding: 40px;
-            border-radius: 15px;
-            border: 1px solid var(--glow);
-        }
-        input { padding: 10px; border-radius: 5px; border: none; width: 250px; }
-        button { background: var(--glow); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #050505; font-family: 'Inter', sans-serif; color: #fff; }
+        canvas { display: block; }
+        #overlay { position: absolute; top: 20px; left: 20px; z-index: 10; pointer-events: none; }
+        .hud-label { font-size: 0.8rem; letter-spacing: 0.2rem; text-transform: uppercase; color: #00f2ff; opacity: 0.7; }
+        .blur-gate { position: absolute; bottom: 20px; right: 20px; font-style: italic; opacity: 0.4; font-size: 0.7rem; }
     </style>
 </head>
 <body>
-
-    <div class="gate-overlay">
-        <h2>jophi.net</h2>
-        <p>Monitor. Measure. Impact. Restore.</p>
-        <p><i>Enter the expansion or view as Guest.</i></p>
-        <input type="email" placeholder="email@domain.com">
-        <button onclick="alert('Syncing to Substrate...')">Sync</button>
-        <p><small style="text-decoration: underline; cursor: pointer;" onclick="document.querySelector('.grid-container').style.filter='none'; document.querySelector('.grid-container').style.opacity='1'; document.querySelector('.gate-overlay').style.display='none';">View Only Mode</small></p>
+    <div id="overlay">
+        <div class="hud-label">Substrate Status: Synchronized</div>
+        <div class="hud-label" id="particle-count">Points of Light: 1000</div>
     </div>
+    <div class="blur-gate">Sensory Blur Active: View-Only Mode</div>
+    <canvas id="universeCanvas"></canvas>
 
-    <div class="grid-container">
-        <div class="metric-cell"><span class="metric-value">98%</span>Ahimsa Compliance</div>
-        <div class="metric-cell"><span class="metric-value">4.2M</span>Restorative Flow</div>
-        <div class="metric-cell"><span class="metric-value">ACTIVE</span>B.L.U.E.E. Sync</div>
-        <div class="metric-cell"><span class="metric-value">100%</span>Botanical Purity</div>
-        <div class="metric-cell"><span class="metric-value">0%</span>Flotsam Detected</div>
-        <script>
-            const container = document.querySelector('.grid-container');
-            for(let i=0; i<45; i++) {
-                container.innerHTML += `<div class="metric-cell"><span class="metric-value">${(Math.random()*100).toFixed(1)}%</span>Expansion Index</div>`;
+    <script>
+        const canvas = document.getElementById('universeCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const particleCount = 1000;
+
+        window.addEventListener('resize', resizeCanvas);
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
             }
-        </script>
-    </div>
+            reset() {
+                this.x = (Math.random() - 0.5) * canvas.width;
+                this.y = (Math.random() - 0.5) * canvas.height;
+                this.z = Math.random() * canvas.width; // Depth factor
+                this.size = 1.5;
+                this.color = Math.random() > 0.8 ? '#00f2ff' : '#ffffff';
+                this.velocity = 2 + Math.random() * 3; // Forward speed
+            }
+            update() {
+                this.z -= this.velocity; // Move toward viewer
+                if (this.z <= 0) this.reset();
+            }
+            draw() {
+                // Minority Report "Starfield" Projection
+                const x = (this.x / this.z) * (canvas.width / 2) + canvas.width / 2;
+                const y = (this.y / this.z) * (canvas.height / 2) + canvas.height / 2;
+                const s = (1 - this.z / canvas.width) * this.size * 5;
+                const opacity = (1 - this.z / canvas.width);
 
+                ctx.beginPath();
+                ctx.arc(x, y, s, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = opacity;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.2)'; // Dark Matter Gravity Trails
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
 </body>
 </html>
