@@ -3,48 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | Fibrous Organism</title>
+    <title>Jophi Universe | Fluid Substrate</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: radial-gradient(circle at center, #0a0a0f 0%, #000 100%); font-family: 'Inter', sans-serif; color: #fff; }
-        canvas { display: block; filter: blur(0.5px); }
-        #hud-top { position: absolute; top: 25px; left: 25px; z-index: 10; pointer-events: none; }
-        #hud-bottom { position: absolute; bottom: 25px; right: 25px; z-index: 10; pointer-events: none; text-align: right; }
-        .label { font-size: 0.75rem; letter-spacing: 0.2rem; text-transform: uppercase; color: #00f2ff; text-shadow: 0 0 10px #00f2ff; opacity: 0.8; }
-        .sub { font-size: 0.6rem; letter-spacing: 0.05rem; color: #fff; opacity: 0.4; margin-top: 5px; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Inter', sans-serif; }
+        canvas { display: block; }
+        #hud { position: absolute; top: 20px; left: 20px; color: #00f2ff; font-size: 10px; letter-spacing: 2px; opacity: 0.5; pointer-events: none; }
     </style>
 </head>
 <body>
-    <div id="hud-top">
-        <div class="label">B.L.U.E.E. PROTOCOL</div>
-        <div class="sub">Bi-directional Ledger for Universal Ecological Expansion</div>
-    </div>
-    <div id="hud-bottom">
-        <div class="label">POINTS OF LIGHT: 1,000</div>
-        <div class="sub">Sensory Blur Active // View-Only Mode</div>
-    </div>
+    <div id="hud">B.L.U.E.E. PROTOCOL // STATUS: FLUID_EXPANSION</div>
     <canvas id="universeCanvas"></canvas>
 
     <script>
         const canvas = document.getElementById('universeCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        const count = 350;
+        const count = 150; // Optimized for high-speed performance
 
         window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
 
-        class Point {
+        class Particle {
             constructor() { this.reset(); }
             reset() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
                 this.z = Math.random() * canvas.width;
-                this.size = Math.random() * 2 + 1;
-                this.speed = 0.5 + Math.random() * 1.5;
-                this.hue = Math.random() > 0.8 ? 180 : 200;
+                this.size = Math.random() * 3 + 1;
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = (Math.random() - 0.5) * 1.5;
+                this.vz = 2 + Math.random() * 4;
+                this.hue = Math.random() > 0.8 ? 180 : 210;
             }
             update() {
-                this.z -= this.speed;
+                this.z -= this.vz;
+                this.x += this.vx + Math.sin(this.z * 0.01) * 2;
+                this.y += this.vy + Math.cos(this.z * 0.01) * 2;
                 if (this.z <= 0) this.reset();
             }
             draw() {
@@ -52,40 +46,25 @@
                 const x = (this.x - canvas.width / 2) * scale + canvas.width / 2;
                 const y = (this.y - canvas.height / 2) * scale + canvas.height / 2;
                 const r = this.size * scale * 0.5;
-                const alpha = (1 - this.z / canvas.width);
+                const alpha = Math.min(1, (1 - this.z / canvas.width));
 
+                // The Glow (No Sticks)
+                const grad = ctx.createRadialGradient(x, y, 0, x, y, r * 4);
+                grad.addColorStop(0, `hsla(${this.hue}, 100%, 70%, ${alpha})`);
+                grad.addColorStop(1, `hsla(${this.hue}, 100%, 50%, 0)`);
+                
+                ctx.fillStyle = grad;
                 ctx.beginPath();
-                ctx.arc(x, y, r, 0, Math.PI * 2);
-                ctx.fillStyle = `hsla(${this.hue}, 100%, 70%, ${alpha})`;
-                ctx.shadowBlur = r * 4;
-                ctx.shadowColor = `hsla(${this.hue}, 100%, 50%, 0.5)`;
+                ctx.arc(x, y, r * 4, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
 
-        for (let i = 0; i < count; i++) particles.push(new Point());
+        for (let i = 0; i < count; i++) particles.push(new Particle());
 
         function animate() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)'; // Dark Matter Gravity Trails
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; // Smooth motion trails
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Fibrous Connections
-            ctx.lineWidth = 0.3;
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dist = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
-                    if (dist < 100) {
-                        const scale = canvas.width / (particles[i].z + 1);
-                        const x1 = (particles[i].x - canvas.width / 2) * scale + canvas.width / 2;
-                        const y1 = (particles[i].y - canvas.height / 2) * scale + canvas.height / 2;
-                        const x2 = (particles[j].x - canvas.width / 2) * scale + canvas.width / 2;
-                        const y2 = (particles[j].y - canvas.height / 2) * scale + canvas.height / 2;
-                        
-                        ctx.strokeStyle = `rgba(0, 242, 255, ${0.1 * (1 - dist / 100)})`;
-                        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-                    }
-                }
-            }
             particles.forEach(p => { p.update(); p.draw(); });
             requestAnimationFrame(animate);
         }
