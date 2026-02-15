@@ -3,22 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | Fluid Substrate</title>
+    <title>Jophi Universe | Textured Substrate</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Inter', sans-serif; }
-        canvas { display: block; }
-        #hud { position: absolute; top: 20px; left: 20px; color: #00f2ff; font-size: 10px; letter-spacing: 2px; opacity: 0.5; pointer-events: none; }
+        canvas { display: block; filter: contrast(120%) brightness(110%); }
+        #hud { position: absolute; top: 25px; left: 25px; color: #00f2ff; font-size: 10px; letter-spacing: 2px; opacity: 0.6; pointer-events: none; text-shadow: 0 0 5px #00f2ff; }
+        .acronym { display: block; font-size: 8px; color: #fff; opacity: 0.4; margin-top: 5px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
-    <div id="hud">B.L.U.E.E. PROTOCOL // STATUS: FLUID_EXPANSION</div>
+    <div id="hud">
+        B.L.U.E.E. PROTOCOL // STATUS: TEXTURED_EXPANSION
+        <span class="acronym">Bi-directional Ledger for Universal Ecological Expansion</span>
+    </div>
     <canvas id="universeCanvas"></canvas>
 
     <script>
         const canvas = document.getElementById('universeCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        const count = 150; // Optimized for high-speed performance
+        const count = 200; 
 
         window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
@@ -26,36 +30,39 @@
         class Particle {
             constructor() { this.reset(); }
             reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
+                this.x = (Math.random() - 0.5) * canvas.width * 1.5;
+                this.y = (Math.random() - 0.5) * canvas.height * 1.5;
                 this.z = Math.random() * canvas.width;
-                this.size = Math.random() * 3 + 1;
-                this.vx = (Math.random() - 0.5) * 1.5;
-                this.vy = (Math.random() - 0.5) * 1.5;
-                this.vz = 2 + Math.random() * 4;
-                this.hue = Math.random() > 0.8 ? 180 : 210;
+                this.size = Math.random() * 2 + 0.5;
+                this.vz = 1.5 + Math.random() * 3;
+                this.hue = Math.random() > 0.7 ? 185 : 210;
+                this.drift = Math.random() * 10;
             }
             update() {
                 this.z -= this.vz;
-                this.x += this.vx + Math.sin(this.z * 0.01) * 2;
-                this.y += this.vy + Math.cos(this.z * 0.01) * 2;
                 if (this.z <= 0) this.reset();
             }
             draw() {
                 const scale = canvas.width / (this.z + 1);
-                const x = (this.x - canvas.width / 2) * scale + canvas.width / 2;
-                const y = (this.y - canvas.height / 2) * scale + canvas.height / 2;
-                const r = this.size * scale * 0.5;
+                const x = (this.x) * scale + canvas.width / 2;
+                const y = (this.y) * scale + canvas.height / 2;
+                const r = this.size * scale * 0.4;
                 const alpha = Math.min(1, (1 - this.z / canvas.width));
 
-                // The Glow (No Sticks)
-                const grad = ctx.createRadialGradient(x, y, 0, x, y, r * 4);
-                grad.addColorStop(0, `hsla(${this.hue}, 100%, 70%, ${alpha})`);
+                // The "Comet" Bloom
+                ctx.globalAlpha = alpha;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${this.hue}, 100%, 80%, ${alpha})`;
+                ctx.fill();
+
+                // The "Gaseous Nebula" Halo (The Texture)
+                const grad = ctx.createRadialGradient(x, y, 0, x, y, r * 8);
+                grad.addColorStop(0, `hsla(${this.hue}, 100%, 50%, ${alpha * 0.3})`);
                 grad.addColorStop(1, `hsla(${this.hue}, 100%, 50%, 0)`);
-                
                 ctx.fillStyle = grad;
                 ctx.beginPath();
-                ctx.arc(x, y, r * 4, 0, Math.PI * 2);
+                ctx.arc(x, y, r * 8, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
@@ -63,9 +70,14 @@
         for (let i = 0; i < count; i++) particles.push(new Particle());
 
         function animate() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; // Smooth motion trails
+            // "Dark Matter" Persistence (The Trail Texture)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)'; 
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
+            
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
             requestAnimationFrame(animate);
         }
         animate();
