@@ -3,84 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | Textured Substrate</title>
+    <title>Jophi Universe | WebGL Substrate</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Inter', sans-serif; }
-        canvas { display: block; filter: contrast(120%) brightness(110%); }
-        #hud { position: absolute; top: 25px; left: 25px; color: #00f2ff; font-size: 10px; letter-spacing: 2px; opacity: 0.6; pointer-events: none; text-shadow: 0 0 5px #00f2ff; }
-        .acronym { display: block; font-size: 8px; color: #fff; opacity: 0.4; margin-top: 5px; letter-spacing: 1px; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; font-family: 'Inter', sans-serif; }
+        #canvas-container { width: 100%; height: 100%; display: block; }
+        #hud { position: absolute; top: 30px; left: 30px; z-index: 10; pointer-events: none; mix-blend-mode: screen; }
+        .label { font-size: 10px; letter-spacing: 3px; color: #00f2ff; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 242, 255, 0.8); }
+        .sub { font-size: 8px; color: rgba(255, 255, 255, 0.6); margin-top: 5px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
     <div id="hud">
-        B.L.U.E.E. PROTOCOL // STATUS: TEXTURED_EXPANSION
-        <span class="acronym">Bi-directional Ledger for Universal Ecological Expansion</span>
+        <div class="label">B.L.U.E.E. PROTOCOL // SYSTEM: THREE_JS_CORE</div>
+        <div class="sub">Bi-directional Ledger for Universal Ecological Expansion</div>
     </div>
-    <canvas id="universeCanvas"></canvas>
+    <div id="canvas-container"></div>
 
-    <script>
-        const canvas = document.getElementById('universeCanvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        const count = 200; 
-
-        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-
-        class Particle {
-            constructor() { this.reset(); }
-            reset() {
-                this.x = (Math.random() - 0.5) * canvas.width * 1.5;
-                this.y = (Math.random() - 0.5) * canvas.height * 1.5;
-                this.z = Math.random() * canvas.width;
-                this.size = Math.random() * 2 + 0.5;
-                this.vz = 1.5 + Math.random() * 3;
-                this.hue = Math.random() > 0.7 ? 185 : 210;
-                this.drift = Math.random() * 10;
-            }
-            update() {
-                this.z -= this.vz;
-                if (this.z <= 0) this.reset();
-            }
-            draw() {
-                const scale = canvas.width / (this.z + 1);
-                const x = (this.x) * scale + canvas.width / 2;
-                const y = (this.y) * scale + canvas.height / 2;
-                const r = this.size * scale * 0.4;
-                const alpha = Math.min(1, (1 - this.z / canvas.width));
-
-                // The "Comet" Bloom
-                ctx.globalAlpha = alpha;
-                ctx.beginPath();
-                ctx.arc(x, y, r, 0, Math.PI * 2);
-                ctx.fillStyle = `hsla(${this.hue}, 100%, 80%, ${alpha})`;
-                ctx.fill();
-
-                // The "Gaseous Nebula" Halo (The Texture)
-                const grad = ctx.createRadialGradient(x, y, 0, x, y, r * 8);
-                grad.addColorStop(0, `hsla(${this.hue}, 100%, 50%, ${alpha * 0.3})`);
-                grad.addColorStop(1, `hsla(${this.hue}, 100%, 50%, 0)`);
-                ctx.fillStyle = grad;
-                ctx.beginPath();
-                ctx.arc(x, y, r * 8, 0, Math.PI * 2);
-                ctx.fill();
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
             }
         }
+    </script>
 
-        for (let i = 0; i < count; i++) particles.push(new Particle());
+    <script type="module">
+        import * as THREE from 'three';
+
+        // 1. SCENE SETUP
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.002); // Volumetric Depth
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 200; // Starting viewing position
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // 2. GENERATE PROCEDURAL "SMOKE" TEXTURE (No external files needed)
+        function getTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32; canvas.height = 32;
+            const context = canvas.getContext('2d');
+            const gradient = context.createRadialGradient(16, 16, 0, 16, 16, 16);
+            gradient.addColorStop(0, 'rgba(255,255,255,1)');
+            gradient.addColorStop(0.2, 'rgba(255,255,255,0.8)');
+            gradient.addColorStop(0.5, 'rgba(255,255,255,0.2)');
+            gradient.addColorStop(1, 'rgba(0,0,0,0)');
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, 32, 32);
+            const texture = new THREE.CanvasTexture(canvas);
+            return texture;
+        }
+
+        // 3. CREATE THE GALAXY (Particles)
+        const particleCount = 600;
+        const geometry = new THREE.BufferGeometry();
+        const positions = [];
+        const colors = [];
+        const sizes = [];
+
+        const colorPalette = [
+            new THREE.Color('#00f2ff'), // Cyan
+            new THREE.Color('#ffffff'), // White
+            new THREE.Color('#0066ff')  // Deep Blue
+        ];
+
+        for (let i = 0; i < particleCount; i++) {
+            // Spread them out in a massive 3D cloud
+            const x = (Math.random() - 0.5) * 600;
+            const y = (Math.random() - 0.5) * 600;
+            const z = (Math.random() - 0.5) * 600;
+            positions.push(x, y, z);
+
+            // Random colors from palette
+            const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+            colors.push(color.r, color.g, color.b);
+
+            sizes.push(Math.random() * 2);
+        }
+
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+
+        // The Material: This creates the "Glow" and "Gas" look
+        const material = new THREE.PointsMaterial({
+            size: 4,
+            vertexColors: true,
+            map: getTexture(),
+            blending: THREE.AdditiveBlending, // Key for "Fiery" look
+            depthWrite: false,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const galaxy = new THREE.Points(geometry, material);
+        scene.add(galaxy);
+
+        // 4. CREATE FIBROUS CONNECTIONS (The Neural Web)
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0x00f2ff,
+            transparent: true,
+            opacity: 0.05, // Very faint, subtle fibers
+            blending: THREE.AdditiveBlending
+        });
+
+        const lineGeometry = new THREE.BufferGeometry();
+        const linePos = []; // We will update this dynamically
+        const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+        scene.add(lines);
+
+        // 5. ANIMATION LOOP
+        let mouseX = 0;
+        let mouseY = 0;
+        
+        // Gentle interaction
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - window.innerWidth / 2) * 0.1;
+            mouseY = (event.clientY - window.innerHeight / 2) * 0.1;
+        });
+
+        // Add some floating "drift" variables
+        const clock = new THREE.Clock();
 
         function animate() {
-            // "Dark Matter" Persistence (The Trail Texture)
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)'; 
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
             requestAnimationFrame(animate);
+
+            const time = clock.getElapsedTime();
+
+            // Rotate the entire galaxy slowly (Organic drift)
+            galaxy.rotation.y = time * 0.05;
+            galaxy.rotation.z = time * 0.02;
+            lines.rotation.y = time * 0.05;
+            lines.rotation.z = time * 0.02;
+
+            // Camera "breathe" movement
+            camera.position.x += (mouseX - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+
+            // Dynamic Lines (Expensive, so we do a simple version)
+            // Ideally we'd use a shader for this, but for now we rely on the rotating visual alignment
+            // to create the illusion of complex connections without burning the CPU.
+
+            renderer.render(scene, camera);
         }
+
         animate();
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
