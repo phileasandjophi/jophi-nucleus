@@ -1,86 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Jophi Universe | Lobby of Living Principles</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200&display=swap" rel="stylesheet">
-    <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010103; font-family: 'Inter', sans-serif; color: #fff; }
-        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        
-        /* The Obsidian Reflection */
-        #floor-reflection {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 40%;
-            background: linear-gradient(to top, rgba(1, 1, 3, 0.9), transparent);
-            z-index: 2; pointer-events: none;
-        }
+// V37: The B-Flat Resonance & Dark Matter Density
+let droneOsc, intervalOsc;
 
-        /* The Lexicon Overlay */
-        #lexicon {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: none; z-index: 10; pointer-events: none;
-        }
-        .word { 
-            position: absolute; font-weight: 100; color: rgba(0, 242, 255, 0.4); 
-            letter-spacing: 10px; text-transform: lowercase; animation: drift 20s linear infinite;
-        }
-
-        @keyframes drift {
-            from { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            50% { opacity: 0.6; }
-            to { transform: translateY(-100vh) rotate(5deg); opacity: 0; }
-        }
-
-        #ui-layer { position: relative; z-index: 20; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    </style>
-</head>
-<body>
-    <div id="canvas-container"></div>
-    <div id="floor-reflection"></div>
-    <div id="lexicon"></div>
-
-    <div id="ui-layer">
-        <button onclick="emergeToCathedral()">emerge to the foyer</button>
-    </div>
-
-    <script type="module">
-        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-
-        // 432 Hz AUDIO HANDSHAKE
-        let audioCtx;
-        function startUniversalHum() {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.frequency.setValueAtTime(432, audioCtx.currentTime); // The Frequency of What Is
-            gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-        }
-
-        // LEXICON SPAWNER
-        const words = ["Ahimsa", "Satya", "Karuna", "Dharma", "Forgiveness", "Truth"];
-        function spawnLexicon() {
-            const container = document.getElementById('lexicon');
-            container.style.display = 'block';
-            setInterval(() => {
-                const w = document.createElement('div');
-                w.className = 'word';
-                w.innerText = words[Math.floor(Math.random() * words.length)];
-                w.style.left = Math.random() * 90 + 'vw';
-                container.appendChild(w);
-                setTimeout(() => w.remove(), 20000);
-            }, 3000);
-        }
-
-        window.emergeToCathedral = () => {
-            startUniversalHum();
-            spawnLexicon();
-            // Trigger Visual Transition to Obsidian and Nebula
-        };
-
-        // Standard Three.js initialization for Universe stardust
-    </script>
-</body>
-</html>
+function startCathedralSound() {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // B-Flat Foundation (The Universe Hum)
+    droneOsc = audioCtx.createOscillator();
+    droneOsc.frequency.setValueAtTime(58.27, audioCtx.currentTime); // B-Flat 1
+    
+    // The Expanding Interval (Perfect Fifth for Expansion)
+    intervalOsc = audioCtx.createOscillator();
+    intervalOsc.frequency.setValueAtTime(87.31, audioCtx.currentTime); // F 2
+    
+    const masterGain = audioCtx.createGain();
+    masterGain.gain.setValueAtTime(0.015, audioCtx.currentTime); // Low resonant hum
+    
+    droneOsc.connect(masterGain);
+    intervalOsc.connect(masterGain);
+    masterGain.connect(audioCtx.destination);
+    
+    droneOsc.start();
+    intervalOsc.start();
+}
