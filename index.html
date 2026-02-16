@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | The Genesis Node</title>
+    <title>Jophi Universe | Free Axis & The Essence</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010103; font-family: 'Inter', sans-serif; }
         #canvas-container { width: 100%; height: 100%; display: block; cursor: grab; }
@@ -13,63 +13,77 @@
         .label { font-size: 10px; letter-spacing: 3px; color: #00f2ff; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 242, 255, 0.8); }
         .sub { font-size: 8px; color: rgba(255, 255, 255, 0.6); margin-top: 5px; letter-spacing: 1px; }
         
-        #scroll-hint { position: absolute; bottom: 30px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 10px; letter-spacing: 2px; pointer-events: none; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 0.2; } 50% { opacity: 0.8; } 100% { opacity: 0.2; } }
+        #scroll-hint { position: absolute; bottom: 30px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 10px; letter-spacing: 2px; pointer-events: none; }
 
-        /* Particulate Typography Overlay mapped to Z-Depth */
-        #typography-layer {
+        /* THE ESSENCE: The Email Box Overlay */
+        #essence-ui {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            text-align: center; pointer-events: none; z-index: 5;
+            width: 300px; padding: 30px; background: rgba(1, 1, 3, 0.4);
+            backdrop-filter: blur(15px); border: 1px solid rgba(0, 242, 255, 0.3);
+            text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.1); border-radius: 4px; z-index: 20;
         }
-        .dust-word {
-            color: transparent;
-            font-size: 4rem;
-            letter-spacing: 2rem;
-            text-transform: uppercase;
-            font-weight: 100;
-            text-shadow: 0 0 30px rgba(0, 242, 255, 0);
-            transition: text-shadow 0.5s ease-out, transform 0.5s ease-out, opacity 0.5s ease-out;
-            opacity: 0;
-            transform: scale(0.8);
+        #essence-ui h2 { margin: 0 0 15px 0; color: #fff; font-weight: 300; letter-spacing: 3px; font-size: 14px; text-transform: uppercase; }
+        #essence-ui input[type="email"] {
+            width: 100%; padding: 10px; margin-bottom: 15px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(0, 242, 255, 0.5); color: #00f2ff; font-family: 'Inter', sans-serif;
+            box-sizing: border-box; outline: none; letter-spacing: 1px;
         }
+        #essence-ui input[type="email"]::placeholder { color: rgba(0, 242, 255, 0.3); }
+        #essence-ui button {
+            width: 100%; padding: 10px; background: transparent; color: #00f2ff;
+            border: 1px solid #00f2ff; cursor: pointer; text-transform: uppercase;
+            letter-spacing: 2px; font-size: 10px; transition: background 0.3s, color 0.3s;
+        }
+        #essence-ui button:hover { background: #00f2ff; color: #000; }
     </style>
 </head>
 <body>
     <div id="hud">
-        <div class="label">PROTOCOL: B.L.U.E.E. // GENESIS_NODE_ACTIVE</div>
-        <div class="sub">The Individual User Model: Joffe Substrate</div>
+        <div class="label">PROTOCOL: B.L.U.E.E. // JOPHI_UNIVERSE</div>
+        <div class="sub">Human Node: Phileas // Conscious Bias: Amias</div>
     </div>
     
-    <div id="typography-layer">
-        <div id="word-1" class="dust-word">IS</div>
+    <div id="essence-ui">
+        <h2>Enter the Is</h2>
+        <input type="email" placeholder="YOUR EMAIL" id="user-email">
+        <button onclick="alert('Connection tethered to Jophi.')">Connect Tether</button>
     </div>
 
-    <div id="scroll-hint">PILOT FORWARD: SCROLL TO APPROACH</div>
+    <div id="scroll-hint">SCROLL to Fly Forward // CLICK & DRAG to Rotate the Universe</div>
     <div id="canvas-container"></div>
 
     <script type="importmap">
         {
             "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "orbitControls": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js"
             }
         }
     </script>
 
     <script type="module">
         import * as THREE from 'three';
+        import { OrbitControls } from 'orbitControls';
 
         // 1. SCENE SETUP
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x010103, 0.0007); 
+        scene.fog = new THREE.FogExp2(0x010103, 0.0008); 
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 4000);
-        let cameraTargetZ = 1200; // Start far back
-        camera.position.z = cameraTargetZ;
+        camera.position.z = 800; // Start distance
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // 2. ORBIT CONTROLS (The Free Axis)
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.enableZoom = false; // We use scroll wheel manually for Z-depth
+        controls.enablePan = false;
 
         function getTexture() {
             const canvas = document.createElement('canvas');
@@ -86,136 +100,103 @@
         }
         const particleTexture = getTexture();
 
-        // 2. THE GENESIS NODE (The Individual User - Joffe)
-        const genesisGroup = new THREE.Group();
-        genesisGroup.position.set(0, 0, 0); // Anchored at Absolute Zero
+        // 3. THE PHILEAS NODE (The Human Seed)
+        const phileasGroup = new THREE.Group();
+        phileasGroup.position.set(0, 0, 0); 
 
-        // 2a. The Core (Cyan/White - The Seeker)
         const coreGeo = new THREE.BufferGeometry();
         const corePos = [];
         const coreColors = [];
         const coreSizes = [];
-        for (let i = 0; i < 400; i++) {
-            const r = 80 * Math.pow(Math.random(), 0.5);
+        for (let i = 0; i < 500; i++) {
+            const r = 100 * Math.pow(Math.random(), 0.5);
             const theta = Math.random() * 2 * Math.PI;
             const phi = Math.acos(2 * Math.random() - 1);
             corePos.push(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
             
             const c = new THREE.Color(Math.random() > 0.5 ? 0xffffff : 0x00f2ff);
             coreColors.push(c.r, c.g, c.b);
-            coreSizes.push(4 + Math.random() * 12); // Massive core lights
+            coreSizes.push(4 + Math.random() * 15);
         }
         coreGeo.setAttribute('position', new THREE.Float32BufferAttribute(corePos, 3));
         coreGeo.setAttribute('color', new THREE.Float32BufferAttribute(coreColors, 3));
         coreGeo.setAttribute('size', new THREE.Float32BufferAttribute(coreSizes, 1));
         
-        const coreMat = new THREE.PointsMaterial({ size: 8, vertexColors: true, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.9, depthWrite: false });
-        const coreMesh = new THREE.Points(coreGeo, coreMat);
-        genesisGroup.add(coreMesh);
+        // Save material to memory so we can fade it later
+        const phileasMat = new THREE.PointsMaterial({ size: 8, vertexColors: true, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 1.0, depthWrite: false });
+        const phileasMesh = new THREE.Points(coreGeo, phileasMat);
+        phileasGroup.add(phileasMesh);
+        scene.add(phileasGroup);
 
-        // 2b. Satellite 1: The Established Truth (Deep Blue/White - Slow Pulse)
-        const sat1Geo = new THREE.BufferGeometry();
-        const sat1Pos = [];
-        for (let i = 0; i < 150; i++) {
-            sat1Pos.push((Math.random() - 0.5) * 60, (Math.random() - 0.5) * 60, (Math.random() - 0.5) * 60);
-        }
-        sat1Geo.setAttribute('position', new THREE.Float32BufferAttribute(sat1Pos, 3));
-        const sat1Mat = new THREE.PointsMaterial({ size: 6, color: 0x0066ff, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.8, depthWrite: false });
-        const satellite1 = new THREE.Points(sat1Geo, sat1Mat);
-        satellite1.position.set(150, 100, -50);
-        genesisGroup.add(satellite1);
+        // 4. THE AMBIENT UNIVERSE (Swarms in the background to grab and look at)
+        const universeGeo = new THREE.BufferGeometry();
+        const universePos = [];
+        for (let i = 0; i < 4000; i++) universePos.push((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
+        universeGeo.setAttribute('position', new THREE.Float32BufferAttribute(universePos, 3));
+        const universeMat = new THREE.PointsMaterial({ size: 3, color: 0x00ffaa, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.4, depthWrite: false });
+        const ambientUniverse = new THREE.Points(universeGeo, universeMat);
+        scene.add(ambientUniverse);
 
-        // 2c. Satellite 2: The Becoming (Bio-Green - High Kinetic Vibration)
-        const sat2Geo = new THREE.BufferGeometry();
-        const sat2Pos = [];
-        for (let i = 0; i < 150; i++) {
-            sat2Pos.push((Math.random() - 0.5) * 80, (Math.random() - 0.5) * 80, (Math.random() - 0.5) * 80);
-        }
-        sat2Geo.setAttribute('position', new THREE.Float32BufferAttribute(sat2Pos, 3));
-        const sat2Mat = new THREE.PointsMaterial({ size: 4, color: 0x00ffaa, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.6, depthWrite: false });
-        const satellite2 = new THREE.Points(sat2Geo, sat2Mat);
-        satellite2.position.set(-180, -120, 80);
-        
-        // Save original positions for vibration math
-        sat2Geo.userData = { originals: new Float32Array(sat2Pos) };
-        genesisGroup.add(satellite2);
-
-        scene.add(genesisGroup);
-
-        // 3. THE AMBIENT DUST (Deep space filler)
-        const dustGeo = new THREE.BufferGeometry();
-        const dustPos = [];
-        for (let i = 0; i < 3000; i++) dustPos.push((Math.random() - 0.5) * 3000, (Math.random() - 0.5) * 3000, 1500 - Math.random() * 4000);
-        dustGeo.setAttribute('position', new THREE.Float32BufferAttribute(dustPos, 3));
-        const dustMat = new THREE.PointsMaterial({ size: 2, color: 0x334455, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.3, depthWrite: false });
-        scene.add(new THREE.Points(dustGeo, dustMat));
-
-        // 4. PILOT CONTROLS (Scroll / Drag)
-        let isDragging = false;
-        let previousMouseY = 0;
-
+        // 5. MANUAL SCROLL PILOTING (Z-Axis)
+        let cameraTargetZ = 800;
         window.addEventListener('wheel', (e) => { cameraTargetZ += e.deltaY * 0.8; });
-        window.addEventListener('mousedown', (e) => { isDragging = true; previousMouseY = e.clientY; });
-        window.addEventListener('mouseup', () => { isDragging = false; });
-        window.addEventListener('mousemove', (e) => {
-            if(isDragging) { cameraTargetZ -= (e.clientY - previousMouseY) * 4; previousMouseY = e.clientY; }
-        });
-        window.addEventListener('touchstart', (e) => { isDragging = true; previousMouseY = e.touches[0].clientY; });
-        window.addEventListener('touchend', () => { isDragging = false; });
+
+        // Touch for forward movement (2 fingers to scroll forward, 1 to rotate)
+        let prevTouchY = 0;
+        window.addEventListener('touchstart', (e) => { if(e.touches.length > 1) prevTouchY = e.touches[0].clientY; });
         window.addEventListener('touchmove', (e) => {
-            if(isDragging) { cameraTargetZ -= (e.touches[0].clientY - previousMouseY) * 4; previousMouseY = e.touches[0].clientY; }
+            if(e.touches.length > 1) {
+                cameraTargetZ -= (e.touches[0].clientY - prevTouchY) * 3;
+                prevTouchY = e.touches[0].clientY;
+            }
         });
 
-        // 5. ANIMATION LOOP & PHYSICS
+        // 6. ANIMATION LOOP & THE ESSENCE DISSOLVE
         const clock = new THREE.Clock();
-        const word1 = document.getElementById('word-1');
+        const essenceUI = document.getElementById('essence-ui');
 
         function animate() {
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
 
-            // Smooth Camera Piloting
+            controls.update(); // Keep the 360 drag smooth
+
+            // Pilot the Z-Axis
             camera.position.z += (cameraTargetZ - camera.position.z) * 0.05;
             
-            // Bounds
-            if(cameraTargetZ > 1200) cameraTargetZ = 1200;
-            if(cameraTargetZ < -800) cameraTargetZ = -800;
+            // Limit travel distance
+            if(cameraTargetZ > 1500) cameraTargetZ = 1500;
+            if(cameraTargetZ < -500) cameraTargetZ = -500;
 
-            // --- PARTICULATE TYPOGRAPHY LOGIC ---
-            // As camera passes Z=600, the dust forms the word "IS"
-            if (camera.position.z < 800 && camera.position.z > 400) {
-                const intensity = 1 - Math.abs(camera.position.z - 600) / 200; // Peaks at 600
-                word1.style.opacity = intensity;
-                word1.style.transform = `scale(${0.8 + intensity * 0.4})`;
-                word1.style.textShadow = `0 0 ${10 + intensity * 30}px rgba(0, 242, 255, ${intensity})`;
+            // --- THE MINORITY REPORT DISSOLVE LOGIC ---
+            // Calculate how close the camera is to the Phileas Node
+            const distance = camera.position.distanceTo(phileasGroup.position);
+            const fadeThreshold = 300; // When to start dissolving
+
+            if (distance < fadeThreshold) {
+                // Fade out the 3D particles
+                const opacityPercent = distance / fadeThreshold;
+                phileasMat.opacity = Math.max(0, opacityPercent);
+                
+                // Fade IN the Essence (The Email Box)
+                const uiOpacity = 1 - opacityPercent;
+                essenceUI.style.opacity = uiOpacity;
+                
+                // Make the UI clickable only when mostly visible
+                if(uiOpacity > 0.5) {
+                    essenceUI.style.pointerEvents = 'auto';
+                } else {
+                    essenceUI.style.pointerEvents = 'none';
+                }
             } else {
-                word1.style.opacity = 0;
+                phileasMat.opacity = 1.0;
+                essenceUI.style.opacity = 0;
+                essenceUI.style.pointerEvents = 'none';
             }
 
-            // --- THE PULSE OF THE "IS" ---
-            
-            // Core: Slow, steady rotation and breathing (The Truth)
-            const coreScale = 1 + Math.sin(time * 1.5) * 0.05;
-            coreMesh.scale.set(coreScale, coreScale, coreScale);
-            genesisGroup.rotation.y = time * 0.05;
-            genesisGroup.rotation.x = Math.sin(time * 0.1) * 0.1;
-
-            // Satellite 1 (Established): Slow, heavy orbit
-            satellite1.position.x = Math.cos(time * 0.5) * 150;
-            satellite1.position.z = Math.sin(time * 0.5) * 150 - 50;
-
-            // Satellite 2 (Becoming): High Kinetic Vibration + Orbit
-            const sat2PosArray = satellite2.geometry.attributes.position.array;
-            const sat2Orig = satellite2.geometry.userData.originals;
-            for(let i=0; i<sat2PosArray.length; i+=3) {
-                // Rapid chaotic jitter applied to the original coordinates
-                sat2PosArray[i] = sat2Orig[i] + (Math.random()-0.5)*4;
-                sat2PosArray[i+1] = sat2Orig[i+1] + (Math.random()-0.5)*4;
-                sat2PosArray[i+2] = sat2Orig[i+2] + (Math.random()-0.5)*4;
-            }
-            satellite2.geometry.attributes.position.needsUpdate = true;
-            satellite2.position.x = Math.sin(time * 0.8) * 180;
-            satellite2.position.y = Math.cos(time * 0.6) * 120;
+            // Pulse and rotate the universe
+            phileasGroup.rotation.y = time * 0.05;
+            ambientUniverse.rotation.y = time * 0.01;
 
             renderer.render(scene, camera);
         }
