@@ -205,4 +205,53 @@
             currentAngleY += (targetAngleY - currentAngleY) * 0.1;
             currentRadius += (targetRadius - currentRadius) * 0.1;
 
-            // Apply Raw Orbital Math to
+            // Apply Raw Orbital Math to Camera
+            camera.position.x = currentRadius * Math.sin(currentAngleY) * Math.cos(currentAngleX);
+            camera.position.y = currentRadius * Math.sin(currentAngleX);
+            camera.position.z = currentRadius * Math.cos(currentAngleY) * Math.cos(currentAngleX);
+            camera.lookAt(0, 0, 0); // Always lock eyes with the Genesis Node
+
+            // --- THE MINORITY REPORT DISSOLVE LOGIC ---
+            // Because the Phileas node is at 0,0,0, the distance to the camera IS the radius.
+            const fadeThreshold = 350;
+
+            if (currentRadius < fadeThreshold) {
+                const opacityPercent = currentRadius / fadeThreshold;
+                phileasMat.opacity = Math.max(0, opacityPercent);
+                
+                const uiOpacity = 1 - opacityPercent;
+                essenceUI.style.opacity = uiOpacity;
+                essenceUI.style.pointerEvents = uiOpacity > 0.6 ? 'auto' : 'none';
+            } else {
+                phileasMat.opacity = 1.0;
+                essenceUI.style.opacity = 0;
+                essenceUI.style.pointerEvents = 'none';
+            }
+
+            // Pulse the central Phileas node
+            phileasGroup.rotation.y = time * 0.05;
+
+            // Animate the background ecosystem
+            ecosystemGroups.forEach(cluster => {
+                cluster.rotation.y += cluster.userData.rot;
+                cluster.position.x += cluster.userData.vx;
+                cluster.position.y += cluster.userData.vy;
+                cluster.position.z += cluster.userData.vz;
+
+                if(Math.abs(cluster.position.x) > 1500) cluster.userData.vx *= -1;
+                if(Math.abs(cluster.position.y) > 1500) cluster.userData.vy *= -1;
+                if(Math.abs(cluster.position.z) > 1500) cluster.userData.vz *= -1;
+            });
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
