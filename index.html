@@ -90,4 +90,91 @@
     <script type="module">
         import * as THREE from 'three';
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 4000);
+        camera.position.z = 1000;
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // UNIVERSE DARK MATTER (STARDUST)
+        const starsGeo = new THREE.BufferGeometry();
+        const pos = new Float32Array(10000 * 3);
+        for(let i=0; i<10000*3; i++) pos[i] = (Math.random() - 0.5) * 3500;
+        starsGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.1, transparent: true, opacity: 0.3 });
+        const starField = new THREE.Points(starsGeo, starsMat);
+        scene.add(starField);
+
+        // CATHEDRAL GEOMETRY
+        const gridGeo = new THREE.CylinderGeometry(600, 600, 4000, 20, 40, true);
+        const gridMat = new THREE.MeshBasicMaterial({ color: 0x00f2ff, wireframe: true, transparent: true, opacity: 0 });
+        const cathedral = new THREE.Mesh(gridGeo, gridMat);
+        cathedral.rotation.z = Math.PI / 2;
+        scene.add(cathedral);
+
+        // THE B-FLAT AUDIO RESONANCE
+        let audioCtx, drone, interval;
+        function playBFlat() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            drone = audioCtx.createOscillator();
+            interval = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            drone.frequency.setValueAtTime(58.27, audioCtx.currentTime); // B-Flat 1
+            interval.frequency.setValueAtTime(87.31, audioCtx.currentTime); // Perfect Fifth (F)
+            
+            gain.gain.setValueAtTime(0.015, audioCtx.currentTime);
+            drone.connect(gain); interval.connect(gain);
+            gain.connect(audioCtx.destination);
+            drone.start(); interval.start();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            starField.rotation.y += 0.0002;
+            cathedral.rotation.y += 0.0008;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.toggleInfo = () => {
+            const type = document.getElementById('main-type').value;
+            const info = document.getElementById('info-text');
+            info.style.color = "rgba(255, 255, 255, 0.5)";
+            info.innerText = type ? "Emerge to the Foyer" : "awaiting selection...";
+        };
+
+        window.startJourney = () => {
+            const type = document.getElementById('main-type').value;
+            if (!type) {
+                const info = document.getElementById('info-text');
+                info.style.color = "#00f2ff";
+                info.innerText = "declaration required to emerge.";
+                return; 
+            }
+            playBFlat(); // Activate the Universe Sound
+            document.getElementById('home-ui').style.opacity = '0';
+            setTimeout(() => { document.getElementById('home-ui').style.display = 'none'; }, 1500);
+
+            const laser = document.getElementById('laser');
+            laser.style.display = 'block';
+            let lPos = 0;
+            const scan = () => {
+                lPos += 1.5; laser.style.top = lPos + '%';
+                if(lPos < 100) requestAnimationFrame(scan);
+                else {
+                    laser.style.display = 'none';
+                    gridMat.opacity = 0.12;
+                    document.getElementById('floor-reflection').style.opacity = '1';
+                    const fUI = document.getElementById('foyer-ui');
+                    fUI.style.display = 'flex';
+                    setTimeout(() => { fUI.style.opacity = '1'; }, 100);
+                    const zoom = () => { if(camera.position.z > 800) { camera.position.z -= 4; requestAnimationFrame(zoom); } };
+                    zoom();
+                }
+            };
+            scan();
+        };
+    </script>
+</body>
+</html>
