@@ -3,44 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | Geometric Portal</title>
+    <title>Jophi Universe | Stardust Materialization</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010103; font-family: 'Inter', sans-serif; color: #fff; }
-        #canvas-container { width: 100%; height: 100%; display: block; }
+        #canvas-container { width: 100%; height: 100%; display: block; cursor: grab; }
+        #canvas-container:active { cursor: grabbing; }
         
         /* Navigation HUD - Top Right */
         #hud { position: absolute; top: 40px; right: 40px; z-index: 100; text-align: right; }
-        .logo { font-size: 18px; font-weight: 200; letter-spacing: 4px; color: #00f2ff; margin-bottom: 20px; text-transform: lowercase; }
-        .nav-item { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.5); margin-bottom: 10px; cursor: pointer; transition: 0.3s; position: relative; }
-        .nav-item:hover { color: #00f2ff; }
+        .logo { font-size: 18px; font-weight: 200; letter-spacing: 4px; color: #00f2ff; margin-bottom: 25px; text-transform: lowercase; cursor: pointer; }
+        .nav-item { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.4); margin-bottom: 12px; cursor: pointer; transition: 0.5s ease; text-transform: lowercase; }
+        .nav-item:hover { color: #fff; letter-spacing: 3px; }
 
         /* The Definition Portal - Center */
         #portal-overlay {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 400px; text-align: center; pointer-events: none; opacity: 0; transition: opacity 0.5s, transform 0.5s;
+            width: 450px; text-align: center; pointer-events: none; opacity: 0; 
+            transition: opacity 1.2s ease, filter 1.2s ease, transform 1s ease;
+            filter: blur(10px);
         }
-        #portal-overlay.active { opacity: 1; transform: translate(-50%, -52%); }
-        .portal-title { font-size: 12px; letter-spacing: 5px; color: #00f2ff; margin-bottom: 15px; text-transform: uppercase; }
-        .portal-text { font-size: 13px; font-weight: 300; line-height: 1.8; color: rgba(255,255,255,0.8); letter-spacing: 0.5px; }
+        #portal-overlay.active { opacity: 1; filter: blur(0px); transform: translate(-50%, -50%) scale(1.05); }
         
-        #scroll-hint { position: absolute; bottom: 40px; width: 100%; text-align: center; font-size: 9px; letter-spacing: 3px; color: rgba(255,255,255,0.2); text-transform: uppercase; }
+        .portal-title { font-size: 11px; letter-spacing: 4px; color: #00f2ff; margin-bottom: 15px; text-transform: lowercase; opacity: 0.7; }
+        .portal-text { font-size: 13px; font-weight: 300; line-height: 1.8; color: rgba(255,255,255,0.9); letter-spacing: 0.5px; }
+        
+        #scroll-hint { position: absolute; bottom: 40px; width: 100%; text-align: center; font-size: 8px; letter-spacing: 4px; color: rgba(255,255,255,0.2); text-transform: lowercase; }
     </style>
 </head>
 <body>
 
     <div id="hud">
-        <div class="logo">jophi universe</div>
+        <div class="logo" onmouseenter="showPortal('jophi')" onmouseleave="hidePortal()">jophi universe</div>
         <div class="nav-item" onmouseenter="showPortal('bluee')" onmouseleave="hidePortal()">b.l.u.e.e. protocol</div>
         <div class="nav-item" onmouseenter="showPortal('reef')" onmouseleave="hidePortal()">r.e.e.f.</div>
-        <div class="nav-item" style="margin-top:20px; opacity: 0.8;">cybernetic node</div>
+        <div class="nav-item" style="margin-top:20px; opacity: 0.3; cursor: default;">cybernetic node</div>
     </div>
 
-    <div id="portal-overlay" id="portal-box">
+    <div id="portal-overlay">
         <div class="portal-title" id="p-title"></div>
         <div class="portal-text" id="p-text"></div>
     </div>
 
-    <div id="scroll-hint">scroll to penetrate the substrate</div>
+    <div id="scroll-hint">scroll to approach the is</div>
     <div id="canvas-container"></div>
 
     <script type="importmap">
@@ -50,60 +54,85 @@
     <script type="module">
         import * as THREE from 'three';
 
-        // 1. SCENE SETUP
+        // 1. SCENE
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-        camera.position.z = 500;
+        camera.position.z = 600;
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-        // 2. THE GEOMETRIC NODE (Diamond/Wireframe)
-        const geometry = new THREE.IcosahedronGeometry(150, 1); // Diamond-like facets
-        const wireMaterial = new THREE.MeshBasicMaterial({ color: 0x00f2ff, wireframe: true, transparent: true, opacity: 0.15 });
-        const coreNode = new THREE.Mesh(geometry, wireMaterial);
-        scene.add(coreNode);
-
-        // Particle liquid inside the geometry
+        // 2. THE CRYSTALLINE SWARM (The Dynamic Node)
+        const particlesCount = 2500;
         const pGeo = new THREE.BufferGeometry();
-        const pPos = [];
-        for(let i=0; i<1000; i++) {
-            pPos.push((Math.random()-0.5)*250, (Math.random()-0.5)*250, (Math.random()-0.5)*250);
+        const positions = new Float32Array(particlesCount * 3);
+        const colors = new Float32Array(particlesCount * 3);
+        
+        for(let i=0; i < particlesCount; i++) {
+            positions[i*3] = (Math.random() - 0.5) * 300;
+            positions[i*3+1] = (Math.random() - 0.5) * 300;
+            positions[i*3+2] = (Math.random() - 0.5) * 300;
+            
+            colors[i*3] = 0; colors[i*3+1] = 0.95; colors[i*3+2] = 1; // Cyan base
         }
-        pGeo.setAttribute('position', new THREE.Float32BufferAttribute(pPos, 3));
-        const pMat = new THREE.PointsMaterial({ size: 2, color: 0x00f2ff, transparent: true, opacity: 0.5 });
-        const particles = new THREE.Points(pGeo, pMat);
-        coreNode.add(particles);
+        
+        pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        pGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        
+        const pMat = new THREE.PointsMaterial({ size: 1.5, vertexColors: true, transparent: true, opacity: 0.4 });
+        const swarm = new THREE.Points(pGeo, pMat);
+        scene.add(swarm);
 
-        // 3. INTERACTION LOGIC
+        // Background Dust
+        const bgGeo = new THREE.BufferGeometry();
+        const bgPos = new Float32Array(1000 * 3);
+        for(let i=0; i<3000; i++) bgPos[i] = (Math.random() - 0.5) * 2000;
+        bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
+        const bgMat = new THREE.PointsMaterial({ size: 1, color: 0x444444, transparent: true, opacity: 0.2 });
+        scene.add(new THREE.Points(bgGeo, bgMat));
+
+        // 3. INTERACTION
         const definitions = {
-            bluee: { title: "B.L.U.E.E. Protocol", text: "The prōtokollon: the first sheet glued; the absolute verification of authenticity; the handshake." },
-            reef: { title: "R.E.E.F.", text: "Everyone deserves a reef—solitude, budding, upwelling, expansion." }
+            jophi: { title: "the jophi universe", text: "an advanced, frictionless economic and social operating system designed to replace opaque, extraction-based markets ('the mall') with a transparent, abundance-driven network of net positive redundancy." },
+            bluee: { title: "b.l.u.e.e. protocol", text: "bi-directional ledger for universal evolutionary expansion. the 'prōtokollon': the first sheet glued; the absolute verification of authenticity; the handshake." },
+            reef: { title: "r.e.e.f.", text: "reciprocal ecosystem for ecological flourishing. everyone deserves a reef—solitude, budding, upwelling, expansion." }
         };
 
         window.showPortal = (key) => {
+            const overlay = document.getElementById('portal-overlay');
             document.getElementById('p-title').innerText = definitions[key].title;
             document.getElementById('p-text').innerText = definitions[key].text;
-            document.getElementById('portal-overlay').classList.add('active');
-            // Scale up the geometry to "catch" the text
-            coreNode.scale.set(1.5, 1.5, 1.5);
-            wireMaterial.opacity = 0.4;
+            overlay.classList.add('active');
+            
+            // Interaction: Swarm reacts
+            pMat.opacity = 0.8;
+            pMat.size = 2.5;
         };
 
         window.hidePortal = () => {
-            document.getElementById('portal-overlay').classList.remove('active');
-            coreNode.scale.set(1, 1, 1);
-            wireMaterial.opacity = 0.15;
+            const overlay = document.getElementById('portal-overlay');
+            overlay.classList.remove('active');
+            pMat.opacity = 0.4;
+            pMat.size = 1.5;
         };
 
-        // 4. ANIMATION
+        // 4. ANIMATION & DRAG
+        let isDragging = false;
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousedown', () => isDragging = true);
+        window.addEventListener('mouseup', () => isDragging = false);
+        window.addEventListener('mousemove', (e) => {
+            if(isDragging) {
+                swarm.rotation.y += e.movementX * 0.005;
+                swarm.rotation.x += e.movementY * 0.005;
+            }
+        });
+
         function animate() {
             requestAnimationFrame(animate);
-            coreNode.rotation.y += 0.003;
-            coreNode.rotation.x += 0.001;
-            particles.rotation.y -= 0.005;
+            swarm.rotation.y += 0.001; // Constant slow drift
             renderer.render(scene, camera);
         }
         animate();
