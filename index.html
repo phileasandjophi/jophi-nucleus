@@ -3,22 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | V40 The Constant Flow</title>
+    <title>Jophi Universe | Era 5 Manifest</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300&display=swap" rel="stylesheet">
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010103; font-family: 'Inter', sans-serif; color: #fff; }
         #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         #floor-reflection { position: fixed; bottom: 0; left: 0; width: 100%; height: 40%; background: linear-gradient(to top, rgba(1, 1, 3, 0.98), transparent); z-index: 2; pointer-events: none; opacity: 0; transition: opacity 3s ease; }
+        
         @keyframes unified-breathe { 0%, 100% { opacity: 0.2; transform: scale(0.98); } 50% { opacity: 0.85; transform: scale(1.02); text-shadow: 0 0 10px rgba(0, 242, 255, 0.4); } }
         .atmosphere { position: absolute; font-weight: 100; letter-spacing: 6px; color: #00f2ff; font-size: 11px; text-transform: lowercase; pointer-events: none; z-index: 5; animation: unified-breathe 6s ease-in-out infinite; }
         #a1 { top: 12%; left: 18%; } #a2 { top: 18%; right: 12%; font-size: 13px; } #a3 { bottom: 18%; left: 12%; } #a4 { bottom: 12%; right: 18%; }
+        
         #home-ui { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 1.5s ease; }
         .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); padding: 50px; width: 450px; text-align: center; }
         .breathing-trigger { font-size: 15px; letter-spacing: 8px; color: #00f2ff; text-transform: lowercase; margin-bottom: 35px; font-weight: 200; animation: unified-breathe 5s ease-in-out infinite; }
+        
         select { background: rgba(0, 0, 0, 0.6); color: #00f2ff; border: 1px solid rgba(0, 242, 255, 0.2); padding: 14px; width: 100%; font-family: 'Inter'; font-size: 11px; letter-spacing: 3px; text-transform: lowercase; margin-bottom: 15px; outline: none; font-weight: 200; }
         .description-box { font-size: 11px; font-weight: 200; line-height: 1.8; color: rgba(255, 255, 255, 0.5); margin-bottom: 35px; min-height: 65px; text-align: left; letter-spacing: 1px; }
         button { background: transparent; border: 1px solid rgba(0, 242, 255, 0.4); color: #00f2ff; padding: 16px 30px; font-size: 11px; letter-spacing: 5px; text-transform: lowercase; cursor: pointer; transition: 0.5s; width: 100%; font-weight: 200; }
         button:hover { background: rgba(0, 242, 255, 0.1); border: 1px solid #00f2ff; box-shadow: 0 0 25px rgba(0,242,255,0.3); }
+
         #foyer-ui { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 1000px; z-index: 20; display: none; opacity: 0; transition: opacity 3s ease; flex-direction: column; align-items: center; }
         .holo-pane { background: rgba(0, 242, 255, 0.01); backdrop-filter: blur(15px); border-left: 2px solid #00f2ff; padding: 50px; border-radius: 2px; width: 100%; box-sizing: border-box; }
         .label { font-size: 10px; letter-spacing: 6px; color: #00f2ff; text-transform: lowercase; margin-bottom: 20px; font-weight: 200; }
@@ -52,22 +56,22 @@
 
     <div id="foyer-ui">
         <div class="holo-pane">
-            <div class="label">Lobby of Living Principles | Intake</div>
+            <div class="label">Era 5: Weird Future | Lokah Samastah Sukhino Bhavantu</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
                 <div>
-                    <div class="label">Legal Name / Identifier</div>
-                    <input type="text" placeholder="enter identifier...">
+                    <div class="label">Presence Identifier</div>
+                    <input type="text" placeholder="spill the name...">
                 </div>
                 <div>
-                    <div class="label">Density Selection (Sextant)</div>
+                    <div class="label">Sextant Density (Measurement)</div>
                     <select style="margin-top:10px;">
-                        <option>Individual (Light)</option>
-                        <option>Small Collective (Moderate)</option>
-                        <option>Full Enterprise (Thick)</option>
+                        <option>Light (Individual)</option>
+                        <option>Moderate (Collective)</option>
+                        <option>Thick (Enterprise)</option>
                     </select>
                 </div>
             </div>
-            <button onclick="alert('Transparency Cataloged.')">Finalize Handshake</button>
+            <button onclick="alert('Sentiment Cataloged. The Wheel Turns.')">Finalize Handshake</button>
         </div>
     </div>
 
@@ -75,21 +79,38 @@
     <script type="module">
         import * as THREE from 'three';
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 4000);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 4500);
         camera.position.z = 1000;
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
         const starsGeo = new THREE.BufferGeometry();
-        const pos = new Float32Array(10000 * 3);
-        for(let i=0; i<10000*3; i++) pos[i] = (Math.random() - 0.5) * 3500;
+        const pos = new Float32Array(15000 * 3);
+        for(let i=0; i<15000*3; i++) pos[i] = (Math.random() - 0.5) * 4000;
         starsGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.1, transparent: true, opacity: 0.3 });
+        const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.9, transparent: true, opacity: 0.25 });
         const starField = new THREE.Points(starsGeo, starsMat);
         scene.add(starField);
 
-        const gridGeo = new THREE.CylinderGeometry(600, 600, 4000, 20, 40, true);
+        // DHARMACHAKRA WITH ERA 5 SPOKES
+        const wheelGroup = new THREE.Group();
+        const torusGeo = new THREE.TorusGeometry(230, 3, 16, 100);
+        const wheelMat = new THREE.MeshBasicMaterial({ color: 0x00f2ff, wireframe: true, transparent: true, opacity: 0 });
+        const rim = new THREE.Mesh(torusGeo, wheelMat);
+        wheelGroup.add(rim);
+
+        for(let i=0; i<8; i++) {
+            const spokeGeo = new THREE.CylinderGeometry(1, 1, 460);
+            const spoke = new THREE.Mesh(spokeGeo, wheelMat);
+            spoke.rotation.z = (i * Math.PI) / 4;
+            wheelGroup.add(spoke);
+        }
+        wheelGroup.rotation.x = Math.PI / 2;
+        wheelGroup.position.y = -500;
+        scene.add(wheelGroup);
+
+        const gridGeo = new THREE.CylinderGeometry(750, 750, 5000, 24, 48, true);
         const gridMat = new THREE.MeshBasicMaterial({ color: 0x00f2ff, wireframe: true, transparent: true, opacity: 0 });
         const cathedral = new THREE.Mesh(gridGeo, gridMat);
         cathedral.rotation.z = Math.PI / 2;
@@ -103,7 +124,7 @@
             const gain = audioCtx.createGain();
             drone.frequency.setValueAtTime(58.27, audioCtx.currentTime);
             interval.frequency.setValueAtTime(87.31, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.015, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
             drone.connect(gain); interval.connect(gain);
             gain.connect(audioCtx.destination);
             drone.start(); interval.start();
@@ -111,19 +132,17 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            starField.rotation.y += 0.0002;
-            cathedral.rotation.y += 0.0008;
+            starField.rotation.y += 0.0001;
+            cathedral.rotation.y += 0.0005;
+            wheelGroup.rotation.y += 0.001;
             renderer.render(scene, camera);
         }
         animate();
 
-        // THE FIXED HANDSHAKE
         document.getElementById('emerge-btn').onclick = function() {
             const type = document.getElementById('main-type').value;
-            const info = document.getElementById('info-text');
             if (!type) {
-                info.style.color = "#00f2ff";
-                info.innerText = "declaration required to emerge.";
+                document.getElementById('info-text').innerText = "declaration required to emerge.";
                 return; 
             }
             playBFlat();
@@ -133,16 +152,17 @@
             laser.style.display = 'block';
             let lPos = 0;
             const scan = () => {
-                lPos += 1.5; laser.style.top = lPos + '%';
+                lPos += 1.8; laser.style.top = lPos + '%';
                 if(lPos < 100) requestAnimationFrame(scan);
                 else {
                     laser.style.display = 'none';
-                    gridMat.opacity = 0.12;
+                    gridMat.opacity = 0.08;
+                    wheelMat.opacity = 0.3;
                     document.getElementById('floor-reflection').style.opacity = '1';
                     const fUI = document.getElementById('foyer-ui');
                     fUI.style.display = 'flex';
                     setTimeout(() => { fUI.style.opacity = '1'; }, 100);
-                    const zoom = () => { if(camera.position.z > 800) { camera.position.z -= 4; requestAnimationFrame(zoom); } };
+                    const zoom = () => { if(camera.position.z > 900) { camera.position.z -= 3; requestAnimationFrame(zoom); } };
                     zoom();
                 }
             };
