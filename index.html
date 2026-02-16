@@ -3,155 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | The Swoof</title>
+    <title>Jophi Universe | Stable Anchor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap" rel="stylesheet">
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010103; font-family: 'Inter', sans-serif; color: #fff; }
-        #canvas-container { width: 100%; height: 100%; display: block; }
+        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         
-        #hud { position: absolute; top: 40px; right: 40px; z-index: 100; text-align: right; transition: opacity 1s; }
-        .logo { font-size: 18px; font-weight: 200; letter-spacing: 4px; color: #00f2ff; margin-bottom: 25px; text-transform: lowercase; }
-
-        /* The Foyer Overlay */
-        #foyer-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        /* The Translucent Anchor UI */
+        #ui-layer {
+            position: relative; z-index: 10; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            pointer-events: none; opacity: 0; transition: opacity 2s ease; z-index: 200;
-        }
-        #foyer-overlay.active { opacity: 1; pointer-events: auto; }
-
-        #scan-line {
-            position: absolute; top: -10%; left: 0; width: 100%; height: 30%;
-            background: linear-gradient(to bottom, transparent, rgba(0, 242, 255, 0.4), transparent);
-            display: none; z-index: 210;
         }
 
-        .node-choice {
-            font-size: 11px; letter-spacing: 5px; color: #00f2ff; margin: 20px;
-            cursor: pointer; opacity: 0.6; transition: 0.8s; text-transform: lowercase;
-            padding: 15px 40px; border: 1px solid transparent;
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            padding: 40px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        .node-choice:hover { opacity: 1; border: 1px solid rgba(0, 242, 255, 0.5); text-shadow: 0 0 20px #00f2ff; }
 
-        #tether-btn { 
-            background: transparent; border: 1px solid #00f2ff; color: #00f2ff; 
-            padding: 15px 40px; cursor: pointer; letter-spacing: 4px; font-size: 10px;
-            transition: 0.5s;
+        .logo-text { font-size: 16px; letter-spacing: 8px; color: #00f2ff; text-transform: lowercase; margin-bottom: 30px; font-weight: 200; }
+        
+        select {
+            background: rgba(0, 0, 0, 0.5);
+            color: #00f2ff;
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            padding: 10px;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: lowercase;
+            margin-bottom: 20px;
+            outline: none;
+            cursor: pointer;
         }
-        #tether-btn:hover { background: #00f2ff; color: #000; box-shadow: 0 0 30px rgba(0,242,255,0.5); }
+
+        .description-box {
+            font-size: 13px;
+            font-weight: 300;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+            min-height: 80px;
+            text-align: left;
+        }
+
+        button {
+            background: transparent;
+            border: 1px solid #00f2ff;
+            color: #00f2ff;
+            padding: 12px 30px;
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: lowercase;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+        }
+        button:hover { background: #00f2ff; color: #000; box-shadow: 0 0 20px rgba(0,242,255,0.4); }
+
+        /* The Laser Scan */
+        #laser {
+            position: fixed; top: -2px; left: 0; width: 100%; height: 2px;
+            background: #00f2ff; box-shadow: 0 0 15px #00f2ff;
+            z-index: 100; display: none;
+        }
     </style>
 </head>
 <body>
 
-    <div id="hud">
-        <div class="logo">jophi universe</div>
-        <button id="tether-btn">tether to substrate</button>
-    </div>
-
-    <div id="scan-line"></div>
-
-    <div id="foyer-overlay">
-        <div style="font-size: 10px; letter-spacing: 10px; margin-bottom: 60px; color: #fff;">foyer : asheville anchor</div>
-        <div class="node-choice" onclick="enterReef('be')">just be</div>
-        <div class="node-choice" onclick="enterReef('reef')">individual reef</div>
-        <div class="node-choice" onclick="enterReef('build')">build / entrepreneur</div>
-    </div>
+    <div id="laser"></div>
 
     <div id="canvas-container"></div>
 
+    <div id="ui-layer">
+        <div class="glass-panel">
+            <div class="logo-text">jophi universe</div>
+            
+            <select id="protocol-select" onchange="updateInfo()">
+                <option value="joffe">jophi / joffe (the individual human)</option>
+                <option value="bluee">the b.l.u.e.e. protocol</option>
+                <option value="reef">r.e.e.f. (reciprocal ecosystem)</option>
+            </select>
+
+            <div class="description-box" id="info-text">
+                select a protocol to begin the handshake.
+            </div>
+
+            <button onclick="runScan()">initiate tether</button>
+        </div>
+    </div>
+
     <script type="importmap">
-        { "imports": { 
-            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
-        } }
+        { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
     </script>
 
     <script type="module">
         import * as THREE from 'three';
-        import { initializeApp } from 'firebase/app';
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'firebase/auth';
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyD_ta8hLzrOCwpzUL4Wmcua0KzGgggeuS4",
-            authDomain: "jophi-universe.firebaseapp.com",
-            projectId: "jophi-universe",
-            storageBucket: "jophi-universe.firebasestorage.app",
-            messagingSenderId: "834755108312",
-            appId: "1:834755108312:web:b25430f7a687b41b5666ad"
-        };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-
-        // SCENE SETUP
+        // STABLE GALAXY
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-        camera.position.z = 800;
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 2000);
+        camera.position.z = 1000;
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-        const pGeo = new THREE.BufferGeometry();
-        const particlesCount = 4000;
-        const pos = new Float32Array(particlesCount * 3);
-        for(let i=0; i<particlesCount*3; i++) pos[i] = (Math.random()-0.5) * 1200;
-        pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        const pMat = new THREE.PointsMaterial({ size: 1.5, color: 0x00f2ff, transparent: true, opacity: 0.4 });
-        const swarm = new THREE.Points(pGeo, pMat);
-        scene.add(swarm);
-
-        // THE SWOOF LOGIC
-        const triggerSwoof = () => {
-            document.getElementById('hud').style.opacity = '0';
-            const scanner = document.getElementById('scan-line');
-            scanner.style.display = 'block';
-            
-            let pos = -10;
-            const interval = setInterval(() => {
-                pos += 1.5;
-                scanner.style.top = pos + '%';
-                if (pos > 110) {
-                    clearInterval(interval);
-                    scanner.style.display = 'none';
-                    document.getElementById('foyer-overlay').classList.add('active');
-                    // Buoyant Lift
-                    gsap_lift(400); 
-                }
-            }, 16);
-        };
-
-        const gsap_lift = (targetZ) => {
-            const move = () => {
-                if(Math.abs(camera.position.z - targetZ) > 0.5) {
-                    camera.position.z += (targetZ - camera.position.z) * 0.03;
-                    requestAnimationFrame(move);
-                }
-            };
-            move();
-        };
-
-        // AUTH TRIGGER
-        document.getElementById('tether-btn').onclick = () => signInWithPopup(auth, provider);
-
-        // AUTO-DETECTION
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                console.log("Tether verified.");
-                triggerSwoof();
-            }
-        });
-
-        window.enterReef = (level) => {
-            alert(`Entering the ${level} state...`);
-            // Here is where we will manifest Phase 3: The Customs Hall
-        };
-
-        function animate() {
-            requestAnimationFrame(animate);
-            swarm.rotation.y += 0.0005;
-            renderer.render(scene, camera);
-        }
-        animate();
-    </script>
-</body>
-</html>
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsCount = 6000;
+        const positions = new Float32Array(starsCount * 3);
+        for(let i=0; i<starsCount*3; i++) positions[i] = (Math.random() - 0.5) * 3000;
+        starsGeometry.setAttribute('position', new THREE.
