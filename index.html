@@ -2,157 +2,85 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | Universal Law</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300&display=swap" rel="stylesheet">
+    <title>Jophi Universe | Lobby of Living Principles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200&display=swap" rel="stylesheet">
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010103; font-family: 'Inter', sans-serif; color: #fff; }
         #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         
-        /* HOMEPAGE ATMOSPHERE */
-        @keyframes unified-breathe {
-            0%, 100% { opacity: 0.2; transform: scale(0.98); }
-            50% { opacity: 0.85; transform: scale(1.02); text-shadow: 0 0 10px rgba(0, 242, 255, 0.4); }
+        /* The Obsidian Reflection */
+        #floor-reflection {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 40%;
+            background: linear-gradient(to top, rgba(1, 1, 3, 0.9), transparent);
+            z-index: 2; pointer-events: none;
         }
-        .atmosphere { position: absolute; font-weight: 100; letter-spacing: 6px; color: #00f2ff; font-size: 11px; text-transform: lowercase; pointer-events: none; z-index: 5; animation: unified-breathe 6s ease-in-out infinite; }
-        #a1 { top: 12%; left: 18%; animation-delay: 0s; }
-        #a2 { top: 18%; right: 12%; animation-delay: 1.5s; font-size: 13px; }
-        #a3 { bottom: 18%; left: 12%; animation-delay: 3s; }
-        #a4 { bottom: 12%; right: 18%; animation-delay: 4.5s; }
 
-        #home-ui { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 1.5s ease; }
-        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); padding: 50px; width: 450px; text-align: center; }
-        
-        .breathing-trigger { font-size: 15px; letter-spacing: 8px; color: #00f2ff; text-transform: lowercase; margin-bottom: 35px; font-weight: 200; animation: unified-breathe 5s ease-in-out infinite; }
-        
-        select { background: rgba(0, 0, 0, 0.6); color: #00f2ff; border: 1px solid rgba(0, 242, 255, 0.2); padding: 14px; width: 100%; font-family: 'Inter'; font-size: 11px; letter-spacing: 3px; text-transform: lowercase; margin-bottom: 15px; outline: none; font-weight: 200; }
-        
-        .description-box { font-size: 11px; font-weight: 200; line-height: 1.8; color: rgba(255, 255, 255, 0.5); margin-bottom: 35px; min-height: 65px; text-align: left; letter-spacing: 1px; transition: color 0.5s ease; }
-        
-        button { background: transparent; border: 1px solid rgba(0, 242, 255, 0.4); color: #00f2ff; padding: 16px 30px; font-size: 11px; letter-spacing: 5px; text-transform: lowercase; cursor: pointer; transition: 0.5s; width: 100%; font-weight: 200; }
-        button:hover { background: rgba(0, 242, 255, 0.1); border: 1px solid #00f2ff; box-shadow: 0 0 25px rgba(0,242,255,0.3); }
+        /* The Lexicon Overlay */
+        #lexicon {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; z-index: 10; pointer-events: none;
+        }
+        .word { 
+            position: absolute; font-weight: 100; color: rgba(0, 242, 255, 0.4); 
+            letter-spacing: 10px; text-transform: lowercase; animation: drift 20s linear infinite;
+        }
 
-        /* CATHEDRAL/FOYER INTAKE */
-        #foyer-ui { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 1000px; z-index: 20; display: none; opacity: 0; transition: opacity 2s ease; flex-direction: column; align-items: center; }
-        .holo-pane { background: rgba(0, 242, 255, 0.02); backdrop-filter: blur(15px); border-left: 2px solid #00f2ff; padding: 50px; border-radius: 2px; width: 100%; box-sizing: border-box; }
-        .label { font-size: 10px; letter-spacing: 6px; color: #00f2ff; text-transform: lowercase; margin-bottom: 20px; font-weight: 200; }
-        input { background: transparent; border: none; border-bottom: 1px solid rgba(0, 242, 255, 0.3); color: #fff; width: 100%; padding: 12px 0; font-family: 'Inter'; font-weight: 100; font-size: 15px; outline: none; margin-bottom: 40px; }
+        @keyframes drift {
+            from { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            50% { opacity: 0.6; }
+            to { transform: translateY(-100vh) rotate(5deg); opacity: 0; }
+        }
 
-        #laser { position: fixed; top: -2px; left: 0; width: 100%; height: 1px; background: #00f2ff; box-shadow: 0 0 10px #00f2ff; z-index: 100; display: none; }
+        #ui-layer { position: relative; z-index: 20; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
-    <div id="laser"></div>
-    <div class="atmosphere" id="a1">it is</div>
-    <div class="atmosphere" id="a2">the jophi universe</div>
-    <div class="atmosphere" id="a3">borderless & infinite</div>
-    <div class="atmosphere" id="a4">welcoming entities welcoming</div>
-
     <div id="canvas-container"></div>
+    <div id="floor-reflection"></div>
+    <div id="lexicon"></div>
 
-    <div id="home-ui">
-        <div class="glass-panel">
-            <div class="breathing-trigger">Begin Transparenting...</div>
-            <select id="main-type" onchange="toggleInfo()">
-                <option value="">select entity type</option>
-                <option value="individual">1) individual</option>
-                <option value="business">2) business</option>
-                <option value="other">3) other</option>
-            </select>
-            <div class="description-box" id="info-text">awaiting selection...</div>
-            <button onclick="startJourney()">Emerge to the Foyer</button>
-        </div>
+    <div id="ui-layer">
+        <button onclick="emergeToCathedral()">emerge to the foyer</button>
     </div>
 
-    <div id="foyer-ui">
-        <div class="holo-pane">
-            <div class="label">Entity Declaration / Intake</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
-                <div>
-                    <div class="label">Legal Name / Identifier</div>
-                    <input type="text" placeholder="enter identifier...">
-                </div>
-                <div>
-                    <div class="label">Density Selection</div>
-                    <select style="margin-top:10px;">
-                        <option>Individual (Light)</option>
-                        <option>Small Collective (Moderate)</option>
-                        <option>Full Enterprise (Thick)</option>
-                    </select>
-                </div>
-            </div>
-            <button onclick="alert('Transparenting Secured.')">Finalize Handshake</button>
-        </div>
-    </div>
-
-    <script type="importmap"> { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } } </script>
     <script type="module">
-        import * as THREE from 'three';
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 3000);
-        camera.position.z = 1000;
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
+        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
-        const starsGeo = new THREE.BufferGeometry();
-        const pos = new Float32Array(8000 * 3);
-        for(let i=0; i<8000*3; i++) pos[i] = (Math.random() - 0.5) * 3000;
-        starsGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.1, transparent: true, opacity: 0.3 });
-        const starField = new THREE.Points(starsGeo, starsMat);
-        scene.add(starField);
-
-        const gridGeo = new THREE.CylinderGeometry(500, 500, 3000, 16, 30, true);
-        const gridMat = new THREE.MeshBasicMaterial({ color: 0x00f2ff, wireframe: true, transparent: true, opacity: 0 });
-        const cathedral = new THREE.Mesh(gridGeo, gridMat);
-        cathedral.rotation.z = Math.PI / 2;
-        scene.add(cathedral);
-
-        function animate() {
-            requestAnimationFrame(animate);
-            starField.rotation.y += 0.0002;
-            cathedral.rotation.y += 0.001;
-            renderer.render(scene, camera);
+        // 432 Hz AUDIO HANDSHAKE
+        let audioCtx;
+        function startUniversalHum() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.frequency.setValueAtTime(432, audioCtx.currentTime); // The Frequency of What Is
+            gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
         }
-        animate();
 
-        window.toggleInfo = () => {
-            const type = document.getElementById('main-type').value;
-            const info = document.getElementById('info-text');
-            info.style.color = "rgba(255, 255, 255, 0.5)";
-            info.innerText = type ? "Emerge to the Foyer" : "awaiting selection...";
+        // LEXICON SPAWNER
+        const words = ["Ahimsa", "Satya", "Karuna", "Dharma", "Forgiveness", "Truth"];
+        function spawnLexicon() {
+            const container = document.getElementById('lexicon');
+            container.style.display = 'block';
+            setInterval(() => {
+                const w = document.createElement('div');
+                w.className = 'word';
+                w.innerText = words[Math.floor(Math.random() * words.length)];
+                w.style.left = Math.random() * 90 + 'vw';
+                container.appendChild(w);
+                setTimeout(() => w.remove(), 20000);
+            }, 3000);
+        }
+
+        window.emergeToCathedral = () => {
+            startUniversalHum();
+            spawnLexicon();
+            // Trigger Visual Transition to Obsidian and Nebula
         };
 
-        window.startJourney = () => {
-            const type = document.getElementById('main-type').value;
-            if (!type) {
-                const info = document.getElementById('info-text');
-                info.style.color = "#00f2ff";
-                info.innerText = "declaration required to emerge.";
-                return; 
-            }
-            document.getElementById('home-ui').style.opacity = '0';
-            setTimeout(() => { document.getElementById('home-ui').style.display = 'none'; }, 1500);
-
-            const laser = document.getElementById('laser');
-            laser.style.display = 'block';
-            let lPos = 0;
-            const scan = () => {
-                lPos += 2; laser.style.top = lPos + '%';
-                if(lPos < 100) requestAnimationFrame(scan);
-                else {
-                    laser.style.display = 'none';
-                    gridMat.opacity = 0.15;
-                    const fUI = document.getElementById('foyer-ui');
-                    fUI.style.display = 'flex';
-                    setTimeout(() => { fUI.style.opacity = '1'; }, 100);
-                    const zoom = () => { if(camera.position.z > 700) { camera.position.z -= 5; requestAnimationFrame(zoom); } };
-                    zoom();
-                }
-            };
-            scan();
-        };
+        // Standard Three.js initialization for Universe stardust
     </script>
 </body>
 </html>
