@@ -3,29 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | Stardust Materialization</title>
+    <title>Jophi Universe | The Wisp & The Return</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010103; font-family: 'Inter', sans-serif; color: #fff; }
         #canvas-container { width: 100%; height: 100%; display: block; cursor: grab; }
-        #canvas-container:active { cursor: grabbing; }
         
-        /* Navigation HUD - Top Right */
         #hud { position: absolute; top: 40px; right: 40px; z-index: 100; text-align: right; }
         .logo { font-size: 18px; font-weight: 200; letter-spacing: 4px; color: #00f2ff; margin-bottom: 25px; text-transform: lowercase; cursor: pointer; }
         .nav-item { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.4); margin-bottom: 12px; cursor: pointer; transition: 0.5s ease; text-transform: lowercase; }
-        .nav-item:hover { color: #fff; letter-spacing: 3px; }
+        .nav-item:hover { color: #fff; }
 
-        /* The Definition Portal - Center */
+        /* The Definition Portal - Centered and Distinct */
         #portal-overlay {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 450px; text-align: center; pointer-events: none; opacity: 0; 
-            transition: opacity 1.2s ease, filter 1.2s ease, transform 1s ease;
-            filter: blur(10px);
+            width: 500px; text-align: center; pointer-events: none; opacity: 0; 
+            transition: opacity 1.5s ease, filter 1.5s ease, transform 1.2s ease;
+            filter: blur(15px);
         }
-        #portal-overlay.active { opacity: 1; filter: blur(0px); transform: translate(-50%, -50%) scale(1.05); }
+        #portal-overlay.active { opacity: 1; filter: blur(0px); transform: translate(-50%, -50%) scale(1); }
         
-        .portal-title { font-size: 11px; letter-spacing: 4px; color: #00f2ff; margin-bottom: 15px; text-transform: lowercase; opacity: 0.7; }
-        .portal-text { font-size: 13px; font-weight: 300; line-height: 1.8; color: rgba(255,255,255,0.9); letter-spacing: 0.5px; }
+        .portal-title { font-size: 13px; letter-spacing: 6px; color: #fff; margin-bottom: 20px; text-transform: lowercase; text-shadow: 0 0 15px rgba(255,255,255,0.5); }
+        .portal-text { font-size: 14px; font-weight: 300; line-height: 2; color: rgba(255,255,255,0.85); letter-spacing: 0.5px; }
         
         #scroll-hint { position: absolute; bottom: 40px; width: 100%; text-align: center; font-size: 8px; letter-spacing: 4px; color: rgba(255,255,255,0.2); text-transform: lowercase; }
     </style>
@@ -36,7 +34,7 @@
         <div class="logo" onmouseenter="showPortal('jophi')" onmouseleave="hidePortal()">jophi universe</div>
         <div class="nav-item" onmouseenter="showPortal('bluee')" onmouseleave="hidePortal()">b.l.u.e.e. protocol</div>
         <div class="nav-item" onmouseenter="showPortal('reef')" onmouseleave="hidePortal()">r.e.e.f.</div>
-        <div class="nav-item" style="margin-top:20px; opacity: 0.3; cursor: default;">cybernetic node</div>
+        <div class="nav-item" style="margin-top:20px; opacity: 0.3;">cybernetic node</div>
     </div>
 
     <div id="portal-overlay">
@@ -54,46 +52,37 @@
     <script type="module">
         import * as THREE from 'three';
 
-        // 1. SCENE
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
         camera.position.z = 600;
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-        // 2. THE CRYSTALLINE SWARM (The Dynamic Node)
-        const particlesCount = 2500;
+        // --- THE FLOATING SQUARE UNIVERSE ---
+        const particlesCount = 3000;
         const pGeo = new THREE.BufferGeometry();
         const positions = new Float32Array(particlesCount * 3);
-        const colors = new Float32Array(particlesCount * 3);
+        const originalPositions = new Float32Array(particlesCount * 3);
+        const wispSpeeds = new Float32Array(particlesCount);
         
         for(let i=0; i < particlesCount; i++) {
-            positions[i*3] = (Math.random() - 0.5) * 300;
-            positions[i*3+1] = (Math.random() - 0.5) * 300;
-            positions[i*3+2] = (Math.random() - 0.5) * 300;
-            
-            colors[i*3] = 0; colors[i*3+1] = 0.95; colors[i*3+2] = 1; // Cyan base
+            // "Floaty Square" logic: Randomizing within a cube but drifting
+            const x = (Math.random() - 0.5) * 350;
+            const y = (Math.random() - 0.5) * 350;
+            const z = (Math.random() - 0.5) * 350;
+            positions[i*3] = x; positions[i*3+1] = y; positions[i*3+2] = z;
+            originalPositions[i*3] = x; originalPositions[i*3+1] = y; originalPositions[i*3+2] = z;
+            wispSpeeds[i] = Math.random() * 0.02;
         }
         
         pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        pGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        
-        const pMat = new THREE.PointsMaterial({ size: 1.5, vertexColors: true, transparent: true, opacity: 0.4 });
+        const pMat = new THREE.PointsMaterial({ size: 1.8, color: 0x00f2ff, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending });
         const swarm = new THREE.Points(pGeo, pMat);
         scene.add(swarm);
 
-        // Background Dust
-        const bgGeo = new THREE.BufferGeometry();
-        const bgPos = new Float32Array(1000 * 3);
-        for(let i=0; i<3000; i++) bgPos[i] = (Math.random() - 0.5) * 2000;
-        bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
-        const bgMat = new THREE.PointsMaterial({ size: 1, color: 0x444444, transparent: true, opacity: 0.2 });
-        scene.add(new THREE.Points(bgGeo, bgMat));
-
-        // 3. INTERACTION
+        // --- INTERACTION ---
         const definitions = {
             jophi: { title: "the jophi universe", text: "an advanced, frictionless economic and social operating system designed to replace opaque, extraction-based markets ('the mall') with a transparent, abundance-driven network of net positive redundancy." },
             bluee: { title: "b.l.u.e.e. protocol", text: "bi-directional ledger for universal evolutionary expansion. the 'prōtokollon': the first sheet glued; the absolute verification of authenticity; the handshake." },
@@ -101,38 +90,34 @@
         };
 
         window.showPortal = (key) => {
-            const overlay = document.getElementById('portal-overlay');
             document.getElementById('p-title').innerText = definitions[key].title;
             document.getElementById('p-text').innerText = definitions[key].text;
-            overlay.classList.add('active');
-            
-            // Interaction: Swarm reacts
+            document.getElementById('portal-overlay').classList.add('active');
             pMat.opacity = 0.8;
-            pMat.size = 2.5;
         };
 
         window.hidePortal = () => {
-            const overlay = document.getElementById('portal-overlay');
-            overlay.classList.remove('active');
-            pMat.opacity = 0.4;
-            pMat.size = 1.5;
+            document.getElementById('portal-overlay').classList.remove('active');
+            pMat.opacity = 0.5;
         };
 
-        // 4. ANIMATION & DRAG
-        let isDragging = false;
-        let mouseX = 0, mouseY = 0;
-        window.addEventListener('mousedown', () => isDragging = true);
-        window.addEventListener('mouseup', () => isDragging = false);
-        window.addEventListener('mousemove', (e) => {
-            if(isDragging) {
-                swarm.rotation.y += e.movementX * 0.005;
-                swarm.rotation.x += e.movementY * 0.005;
-            }
-        });
-
+        // --- ANIMATION ---
+        let clock = new THREE.Clock();
         function animate() {
             requestAnimationFrame(animate);
-            swarm.rotation.y += 0.001; // Constant slow drift
+            const time = clock.getElapsedTime();
+            const posAttr = pGeo.attributes.position;
+            
+            for(let i=0; i < particlesCount; i++) {
+                // The "Wisp" Effect: Subtle expansion and contraction
+                const wave = Math.sin(time * 0.5 + i) * 15;
+                posAttr.array[i*3] = originalPositions[i*3] + wave * Math.sin(i);
+                posAttr.array[i*3+1] = originalPositions[i*3+1] + wave * Math.cos(i);
+            }
+            posAttr.needsUpdate = true;
+            
+            swarm.rotation.y += 0.002;
+            swarm.rotation.x += 0.001;
             renderer.render(scene, camera);
         }
         animate();
