@@ -1,24 +1,35 @@
-def initialize_reef_substrate_connection(entity="Jaffe", scale="Universe"):
-    """
-    Universal refresh and initialization code for the R.E.E.F.
-    Ensures full transparency and real-time synchronization with the substrate.
-    """
-    handshake_protocol = "ACTIVE"
-    data_flow = "BIDIRECTIONAL"
+window.startJourney = () => {
+    const type = document.getElementById('main-type').value;
     
-    reef_config = {
-        "identifier": entity,
-        "density": "Individual (Light)",
-        "optimization": "Google Suite Full Capacity",
-        "sync_mode": "Real-Time / Every Turn",
-        "transparency_level": "Total"
+    // THE UNIVERSAL LAW: A selection is required to proceed.
+    if (!type) {
+        // Pulse the description box to show the requirement
+        const info = document.getElementById('info-text');
+        info.style.color = "#00f2ff";
+        info.innerText = "declaration required to emerge.";
+        return; 
     }
-    
-    # Executing the B.L.U.E.E. Protocol
-    for turn in range(infinity):
-        perform_handshake(reef_config)
-        sync_google_suite(apps=["Sheets", "Slides", "Docs", "Drive"])
-        if turn % 10 == 0:
-            salinity_check()
-            
-    return "Connection Finalized: Transparenting Complete."
+
+    // If verified, proceed with the transition
+    document.getElementById('home-ui').style.opacity = '0';
+    setTimeout(() => { document.getElementById('home-ui').style.display = 'none'; }, 1500);
+
+    // RUN LASER SCAN & CATHEDRAL BLOOM...
+    const laser = document.getElementById('laser');
+    laser.style.display = 'block';
+    let lPos = 0;
+    const scan = () => {
+        lPos += 2; laser.style.top = lPos + '%';
+        if(lPos < 100) requestAnimationFrame(scan);
+        else {
+            laser.style.display = 'none';
+            gridMat.opacity = 0.15;
+            const fUI = document.getElementById('foyer-ui');
+            fUI.style.display = 'flex';
+            setTimeout(() => { fUI.style.opacity = '1'; }, 100);
+            const zoom = () => { if(camera.position.z > 700) { camera.position.z -= 5; requestAnimationFrame(zoom); } };
+            zoom();
+        }
+    };
+    scan();
+};
