@@ -3,54 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | The Flawless Orbit</title>
+    <title>Jophi Universe | Emergence</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010103; font-family: 'Inter', sans-serif; }
         #canvas-container { width: 100%; height: 100%; display: block; cursor: grab; }
         #canvas-container:active { cursor: grabbing; }
         
-        #hud { position: absolute; top: 30px; left: 30px; z-index: 10; pointer-events: none; mix-blend-mode: screen; }
-        .label { font-size: 10px; letter-spacing: 3px; color: #00f2ff; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 242, 255, 0.8); }
-        .sub { font-size: 8px; color: rgba(255, 255, 255, 0.6); margin-top: 5px; letter-spacing: 1px; }
+        /* Top Right HUD - No forced caps, right aligned */
+        #hud { position: absolute; top: 30px; right: 30px; z-index: 10; pointer-events: none; mix-blend-mode: screen; text-align: right; }
         
-        #scroll-hint { position: absolute; bottom: 30px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 10px; letter-spacing: 2px; pointer-events: none; }
+        /* The Breathing Logo */
+        .logo { 
+            font-size: 16px; font-weight: 600; color: #00f2ff; letter-spacing: 1px; 
+            margin-bottom: 8px; text-shadow: 0 0 10px rgba(0, 242, 255, 0.6);
+            animation: breathe 4s ease-in-out infinite; 
+        }
+        @keyframes breathe {
+            0%, 100% { opacity: 0.8; transform: scale(1); text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
+            50% { opacity: 1; transform: scale(1.03); text-shadow: 0 0 20px rgba(0, 242, 255, 0.9); }
+        }
 
-        /* THE ESSENCE: The Email Box Overlay */
+        .label { font-size: 11px; letter-spacing: 1px; color: #00f2ff; margin-top: 6px; }
+        .sub { font-size: 9px; color: rgba(255, 255, 255, 0.6); margin-top: 2px; letter-spacing: 0.5px; }
+        .cybernetic { font-size: 10px; color: #fff; margin-top: 10px; letter-spacing: 2px; opacity: 0.8; }
+        
+        #scroll-hint { position: absolute; bottom: 30px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 10px; letter-spacing: 1px; pointer-events: none; }
+
+        /* THE ESSENCE: The Emergence Overlay */
         #essence-ui {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 320px; padding: 35px; background: rgba(5, 10, 20, 0.5);
-            backdrop-filter: blur(12px); border: 1px solid rgba(0, 242, 255, 0.4);
-            text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease-out;
-            box-shadow: 0 0 40px rgba(0, 242, 255, 0.15); border-radius: 4px; z-index: 20;
+            width: 280px; padding: 35px; background: rgba(5, 10, 20, 0.4);
+            backdrop-filter: blur(12px); border: 1px solid rgba(0, 242, 255, 0.3);
+            text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease-out;
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.1); border-radius: 4px; z-index: 20;
         }
-        #essence-ui h2 { margin: 0 0 15px 0; color: #fff; font-weight: 300; letter-spacing: 4px; font-size: 16px; text-transform: uppercase; }
+        #essence-ui h2 { margin: 0 0 20px 0; color: #fff; font-weight: 300; letter-spacing: 2px; font-size: 18px; }
         #essence-ui input[type="email"] {
             width: 100%; padding: 12px; margin-bottom: 20px; background: rgba(0,0,0,0.3);
             border: 1px solid rgba(0, 242, 255, 0.3); color: #00f2ff; font-family: 'Inter', sans-serif;
-            box-sizing: border-box; outline: none; letter-spacing: 1px;
+            box-sizing: border-box; outline: none; letter-spacing: 1px; font-size: 12px;
         }
-        #essence-ui input[type="email"]::placeholder { color: rgba(0, 242, 255, 0.4); font-size: 10px; letter-spacing: 2px; }
+        #essence-ui input[type="email"]::placeholder { color: rgba(0, 242, 255, 0.4); font-size: 11px; letter-spacing: 1px; }
         #essence-ui button {
-            width: 100%; padding: 12px; background: rgba(0, 242, 255, 0.1); color: #00f2ff;
-            border: 1px solid #00f2ff; cursor: pointer; text-transform: uppercase;
-            letter-spacing: 3px; font-size: 11px; transition: all 0.3s;
+            width: 100%; padding: 12px; background: rgba(0, 242, 255, 0.05); color: #00f2ff;
+            border: 1px solid #00f2ff; cursor: pointer; letter-spacing: 2px; font-size: 12px; 
+            transition: all 0.3s;
         }
-        #essence-ui button:hover { background: #00f2ff; color: #000; box-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
+        #essence-ui button:hover { background: #00f2ff; color: #000; box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
     </style>
 </head>
 <body>
     <div id="hud">
-        <div class="label">PROTOCOL: B.L.U.E.E. // JOPHI_UNIVERSE</div>
-        <div class="sub">Human Node: Phileas // Conscious Bias: Amias</div>
+        <div class="logo">Jophi Universe</div>
+        <div class="label">B.L.U.E.E. Protocol</div>
+        <div class="sub">(Bi-directional Ledger for Universal Ecological Expansion)</div>
+        <div class="label">R.E.E.F.</div>
+        <div class="sub">(Reciprocal Ecosystem for Evolutionary Flourishing)</div>
+        <div class="cybernetic">Cybernetic Node</div>
     </div>
     
     <div id="essence-ui">
-        <h2>Enter the Is</h2>
-        <input type="email" placeholder="YOUR EMAIL" id="user-email">
-        <button onclick="alert('Handshake Initiated. Welcome to Jophi.')">Connect Tether</button>
+        <h2>Emerge Here</h2>
+        <input type="email" placeholder="enter email" id="user-email">
+        <button onclick="alert('Tether established.')">Tether</button>
     </div>
 
-    <div id="scroll-hint">SCROLL to pull the universe closer // CLICK & DRAG to orbit the center</div>
+    <div id="scroll-hint">Scroll to approach // Drag to orbit</div>
     <div id="canvas-container"></div>
 
     <script type="importmap">
@@ -90,7 +108,7 @@
         }
         const particleTexture = getTexture();
 
-        // 2. THE PHILEAS NODE (The Genesis Anchor at 0,0,0)
+        // 2. THE PHILEAS NODE
         const phileasGroup = new THREE.Group();
         const coreGeo = new THREE.BufferGeometry();
         const corePos = [];
@@ -102,7 +120,7 @@
             const phi = Math.acos(2 * Math.random() - 1);
             corePos.push(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
             
-            const c = new THREE.Color(Math.random() > 0.6 ? 0xffffff : 0x00f2ff); // Cyan & White
+            const c = new THREE.Color(Math.random() > 0.6 ? 0xffffff : 0x00f2ff); 
             coreColors.push(c.r, c.g, c.b);
             coreSizes.push(5 + Math.random() * 15);
         }
@@ -115,12 +133,12 @@
         phileasGroup.add(phileasMesh);
         scene.add(phileasGroup);
 
-        // 3. THE ECOSYSTEM (Swarms in the background)
+        // 3. THE ECOSYSTEM 
         const ecosystemGroups = [];
         const species = [
-            { color: 0x00ffaa, count: 150, size: 6, spread: 250 }, // Non-Profit Colony
-            { color: 0x6600ff, count: 120, size: 8, spread: 200 }, // For-Profit Construct
-            { color: 0xffaa00, count: 200, size: 5, spread: 350 }  // VC Upwelling
+            { color: 0x00ffaa, count: 150, size: 6, spread: 250 }, 
+            { color: 0x6600ff, count: 120, size: 8, spread: 200 }, 
+            { color: 0xffaa00, count: 200, size: 5, spread: 350 }  
         ];
 
         for(let i = 0; i < 8; i++) {
@@ -155,7 +173,7 @@
         const dustMat = new THREE.PointsMaterial({ size: 2, color: 0x334455, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.3, depthWrite: false });
         scene.add(new THREE.Points(dustGeo, dustMat));
 
-        // 4. BULLETPROOF RAW ORBITAL PHYSICS (No Plugins Required)
+        // 4. ORBITAL PHYSICS
         let isDragging = false;
         let prevX = 0, prevY = 0;
         let targetAngleX = 0, targetAngleY = 0;
@@ -168,13 +186,11 @@
             if(isDragging) {
                 targetAngleY -= (e.clientX - prevX) * 0.005;
                 targetAngleX += (e.clientY - prevY) * 0.005;
-                // Prevent flipping the camera upside down
                 targetAngleX = Math.max(-Math.PI/2.1, Math.min(Math.PI/2.1, targetAngleX));
                 prevX = e.clientX; prevY = e.clientY;
             }
         });
 
-        // Touch Support
         window.addEventListener('touchstart', (e) => { isDragging = true; prevX = e.touches[0].clientX; prevY = e.touches[0].clientY; });
         window.addEventListener('touchend', () => { isDragging = false; });
         window.addEventListener('touchmove', (e) => {
@@ -186,72 +202,6 @@
             }
         });
 
-        // Scroll to Zoom
         window.addEventListener('wheel', (e) => {
             targetRadius += e.deltaY * 0.8;
-            targetRadius = Math.max(50, Math.min(1500, targetRadius)); // Bounds of the universe
-        });
-
-        // 5. ANIMATION LOOP & THE ESSENCE DISSOLVE
-        const clock = new THREE.Clock();
-        const essenceUI = document.getElementById('essence-ui');
-
-        function animate() {
-            requestAnimationFrame(animate);
-            const time = clock.getElapsedTime();
-
-            // Smoothly calculate current orbital position
-            currentAngleX += (targetAngleX - currentAngleX) * 0.1;
-            currentAngleY += (targetAngleY - currentAngleY) * 0.1;
-            currentRadius += (targetRadius - currentRadius) * 0.1;
-
-            // Apply Raw Orbital Math to Camera
-            camera.position.x = currentRadius * Math.sin(currentAngleY) * Math.cos(currentAngleX);
-            camera.position.y = currentRadius * Math.sin(currentAngleX);
-            camera.position.z = currentRadius * Math.cos(currentAngleY) * Math.cos(currentAngleX);
-            camera.lookAt(0, 0, 0); // Always lock eyes with the Genesis Node
-
-            // --- THE MINORITY REPORT DISSOLVE LOGIC ---
-            // Because the Phileas node is at 0,0,0, the distance to the camera IS the radius.
-            const fadeThreshold = 350;
-
-            if (currentRadius < fadeThreshold) {
-                const opacityPercent = currentRadius / fadeThreshold;
-                phileasMat.opacity = Math.max(0, opacityPercent);
-                
-                const uiOpacity = 1 - opacityPercent;
-                essenceUI.style.opacity = uiOpacity;
-                essenceUI.style.pointerEvents = uiOpacity > 0.6 ? 'auto' : 'none';
-            } else {
-                phileasMat.opacity = 1.0;
-                essenceUI.style.opacity = 0;
-                essenceUI.style.pointerEvents = 'none';
-            }
-
-            // Pulse the central Phileas node
-            phileasGroup.rotation.y = time * 0.05;
-
-            // Animate the background ecosystem
-            ecosystemGroups.forEach(cluster => {
-                cluster.rotation.y += cluster.userData.rot;
-                cluster.position.x += cluster.userData.vx;
-                cluster.position.y += cluster.userData.vy;
-                cluster.position.z += cluster.userData.vz;
-
-                if(Math.abs(cluster.position.x) > 1500) cluster.userData.vx *= -1;
-                if(Math.abs(cluster.position.y) > 1500) cluster.userData.vy *= -1;
-                if(Math.abs(cluster.position.z) > 1500) cluster.userData.vz *= -1;
-            });
-
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-    </script>
-</body>
-</html>
+            targetRadius = Math.max(50, Math.min(1500, targetRadius));
