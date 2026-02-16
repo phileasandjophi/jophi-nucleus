@@ -3,22 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | Resilient Ecosystem</title>
+    <title>Jophi Universe | The Genesis Node</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010102; font-family: 'Inter', sans-serif; }
-        #canvas-container { width: 100%; height: 100%; display: block; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010103; font-family: 'Inter', sans-serif; }
+        #canvas-container { width: 100%; height: 100%; display: block; cursor: grab; }
+        #canvas-container:active { cursor: grabbing; }
+        
         #hud { position: absolute; top: 30px; left: 30px; z-index: 10; pointer-events: none; mix-blend-mode: screen; }
-        #loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00f2ff; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; }
         .label { font-size: 10px; letter-spacing: 3px; color: #00f2ff; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 242, 255, 0.8); }
         .sub { font-size: 8px; color: rgba(255, 255, 255, 0.6); margin-top: 5px; letter-spacing: 1px; }
+        
+        #scroll-hint { position: absolute; bottom: 30px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 10px; letter-spacing: 2px; pointer-events: none; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.2; } 50% { opacity: 0.8; } 100% { opacity: 0.2; } }
+
+        /* Particulate Typography Overlay mapped to Z-Depth */
+        #typography-layer {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center; pointer-events: none; z-index: 5;
+        }
+        .dust-word {
+            color: transparent;
+            font-size: 4rem;
+            letter-spacing: 2rem;
+            text-transform: uppercase;
+            font-weight: 100;
+            text-shadow: 0 0 30px rgba(0, 242, 255, 0);
+            transition: text-shadow 0.5s ease-out, transform 0.5s ease-out, opacity 0.5s ease-out;
+            opacity: 0;
+            transform: scale(0.8);
+        }
     </style>
 </head>
 <body>
-    <div id="loading">Establishing Substrate Physics...</div>
-    <div id="hud" style="display: none;">
-        <div class="label">B.L.U.E.E. PROTOCOL // SYSTEM: LIVING_AETHER_V9.1</div>
-        <div class="sub">Bi-directional Ledger for Universal Ecological Expansion</div>
+    <div id="hud">
+        <div class="label">PROTOCOL: B.L.U.E.E. // GENESIS_NODE_ACTIVE</div>
+        <div class="sub">The Individual User Model: Joffe Substrate</div>
     </div>
+    
+    <div id="typography-layer">
+        <div id="word-1" class="dust-word">IS</div>
+    </div>
+
+    <div id="scroll-hint">PILOT FORWARD: SCROLL TO APPROACH</div>
     <div id="canvas-container"></div>
 
     <script type="importmap">
@@ -34,19 +60,16 @@
 
         // 1. SCENE SETUP
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x010102, 0.0012); 
+        scene.fog = new THREE.FogExp2(0x010103, 0.0007); 
 
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
-        camera.position.z = 400;
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 4000);
+        let cameraTargetZ = 1200; // Start far back
+        camera.position.z = cameraTargetZ;
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         document.getElementById('canvas-container').appendChild(renderer.domElement);
-
-        // Remove Loading text, show HUD once JS executes
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('hud').style.display = 'block';
 
         function getTexture() {
             const canvas = document.createElement('canvas');
@@ -63,177 +86,136 @@
         }
         const particleTexture = getTexture();
 
-        // 2. LAYER 1: DEEP AMBIENT VOID
-        const ambientGeo = new THREE.BufferGeometry();
-        const ambientPos = [];
-        for (let i = 0; i < 2000; i++) {
-            ambientPos.push((Math.random() - 0.5) * 2500, (Math.random() - 0.5) * 2500, (Math.random() - 0.5) * 2000);
-        }
-        ambientGeo.setAttribute('position', new THREE.Float32BufferAttribute(ambientPos, 3));
-        const ambientMat = new THREE.PointsMaterial({ size: 1.5, color: 0x445577, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.3, depthWrite: false });
-        const ambientVoid = new THREE.Points(ambientGeo, ambientMat);
-        scene.add(ambientVoid);
+        // 2. THE GENESIS NODE (The Individual User - Joffe)
+        const genesisGroup = new THREE.Group();
+        genesisGroup.position.set(0, 0, 0); // Anchored at Absolute Zero
 
-        // 3. LAYER 2: SWARMING REEFS
-        const swarms = [];
-        const swarmPalettes = [[0x00f2ff, 0xffffff], [0xffaa00, 0xff4400], [0xaa00ff, 0x0066ff]];
-
-        for (let i = 0; i < 4; i++) { 
-            const swarmGroup = new THREE.Group();
-            swarmGroup.position.set((Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 800, (Math.random() - 0.5) * 800);
-            swarmGroup.userData = {
-                vx: (Math.random() - 0.5) * 1.2, vy: (Math.random() - 0.5) * 1.2, vz: (Math.random() - 0.5) * 2.0,
-                rotSpeed: (Math.random() - 0.5) * 0.01
-            };
-
-            const nodesCount = 80;
-            const nodesGeo = new THREE.BufferGeometry();
-            const nodesPos = [];
-            const nodesColor = [];
-            const colors = swarmPalettes[i % swarmPalettes.length];
-
-            for (let j = 0; j < nodesCount; j++) {
-                const radius = Math.random() * 120;
-                const theta = Math.random() * 2 * Math.PI;
-                const phi = Math.acos((Math.random() * 2) - 1);
-                nodesPos.push(radius * Math.sin(phi) * Math.cos(theta), radius * Math.sin(phi) * Math.sin(theta), radius * Math.cos(phi));
-                const c = new THREE.Color(colors[Math.floor(Math.random() * colors.length)]);
-                nodesColor.push(c.r, c.g, c.b);
-            }
-            nodesGeo.setAttribute('position', new THREE.Float32BufferAttribute(nodesPos, 3));
-            nodesGeo.setAttribute('color', new THREE.Float32BufferAttribute(nodesColor, 3));
+        // 2a. The Core (Cyan/White - The Seeker)
+        const coreGeo = new THREE.BufferGeometry();
+        const corePos = [];
+        const coreColors = [];
+        const coreSizes = [];
+        for (let i = 0; i < 400; i++) {
+            const r = 80 * Math.pow(Math.random(), 0.5);
+            const theta = Math.random() * 2 * Math.PI;
+            const phi = Math.acos(2 * Math.random() - 1);
+            corePos.push(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
             
-            const nodesMat = new THREE.PointsMaterial({ size: 5, vertexColors: true, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.8, depthWrite: false });
-            swarmGroup.add(new THREE.Points(nodesGeo, nodesMat));
-            scene.add(swarmGroup);
-            swarms.push(swarmGroup);
+            const c = new THREE.Color(Math.random() > 0.5 ? 0xffffff : 0x00f2ff);
+            coreColors.push(c.r, c.g, c.b);
+            coreSizes.push(4 + Math.random() * 12); // Massive core lights
         }
-
-        // 4. LAYER 3: BULLETPROOF AETHER UNDULATION (The Jellyfish)
-        const aethers = [];
-        const aetherColors = [0x00f2ff, 0xaa00ff, 0xffaa00];
+        coreGeo.setAttribute('position', new THREE.Float32BufferAttribute(corePos, 3));
+        coreGeo.setAttribute('color', new THREE.Float32BufferAttribute(coreColors, 3));
+        coreGeo.setAttribute('size', new THREE.Float32BufferAttribute(coreSizes, 1));
         
-        for(let i = 0; i < 3; i++) {
-            const size = 300;
-            const segments = 30;
-            const aGeo = new THREE.BufferGeometry();
-            const aPos = [];
-            
-            // Mathematically precise grid creation to prevent NaN crashes
-            for(let x = 0; x <= segments; x++) {
-                for(let y = 0; y <= segments; y++) {
-                    aPos.push((x / segments - 0.5) * size);
-                    aPos.push((y / segments - 0.5) * size);
-                    aPos.push(0);
-                }
-            }
-            aGeo.setAttribute('position', new THREE.Float32BufferAttribute(aPos, 3));
-            
-            // Store original coordinates safely
-            aGeo.userData = { originals: new Float32Array(aPos) }; 
+        const coreMat = new THREE.PointsMaterial({ size: 8, vertexColors: true, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.9, depthWrite: false });
+        const coreMesh = new THREE.Points(coreGeo, coreMat);
+        genesisGroup.add(coreMesh);
 
-            const aMat = new THREE.PointsMaterial({
-                color: aetherColors[i], size: 2.5, map: particleTexture,
-                blending: THREE.AdditiveBlending, transparent: true, opacity: 0.6, depthWrite: false
-            });
-            
-            const aMesh = new THREE.Points(aGeo, aMat);
-            aMesh.position.set((Math.random() - 0.5) * 800, (Math.random() - 0.5) * 800, (Math.random() - 0.5) * 600);
-            aMesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
-            
-            aMesh.userData = {
-                waveSpeed: 1.5 + Math.random(),
-                waveFreq: 0.02 + Math.random() * 0.02,
-                drift: { x: (Math.random()-0.5)*1.5, y: (Math.random()-0.5)*1.5, z: (Math.random()-0.5)*2 }
-            };
-            
-            scene.add(aMesh);
-            aethers.push(aMesh);
+        // 2b. Satellite 1: The Established Truth (Deep Blue/White - Slow Pulse)
+        const sat1Geo = new THREE.BufferGeometry();
+        const sat1Pos = [];
+        for (let i = 0; i < 150; i++) {
+            sat1Pos.push((Math.random() - 0.5) * 60, (Math.random() - 0.5) * 60, (Math.random() - 0.5) * 60);
         }
+        sat1Geo.setAttribute('position', new THREE.Float32BufferAttribute(sat1Pos, 3));
+        const sat1Mat = new THREE.PointsMaterial({ size: 6, color: 0x0066ff, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.8, depthWrite: false });
+        const satellite1 = new THREE.Points(sat1Geo, sat1Mat);
+        satellite1.position.set(150, 100, -50);
+        genesisGroup.add(satellite1);
 
-        // 5. LAYER 4: FAST ANOMALIES
-        const anomalyGeo = new THREE.BufferGeometry();
-        const anomalyPos = [];
-        const anomalyVelocities = [];
-        for (let i = 0; i < 15; i++) {
-            anomalyPos.push((Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 800);
-            anomalyVelocities.push({ x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 2, z: 3 + Math.random() * 5 });
+        // 2c. Satellite 2: The Becoming (Bio-Green - High Kinetic Vibration)
+        const sat2Geo = new THREE.BufferGeometry();
+        const sat2Pos = [];
+        for (let i = 0; i < 150; i++) {
+            sat2Pos.push((Math.random() - 0.5) * 80, (Math.random() - 0.5) * 80, (Math.random() - 0.5) * 80);
         }
-        anomalyGeo.setAttribute('position', new THREE.Float32BufferAttribute(anomalyPos, 3));
-        const anomalyMat = new THREE.PointsMaterial({ size: 50, color: 0xffffff, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 1.0, depthWrite: false });
-        const anomalies = new THREE.Points(anomalyGeo, anomalyMat);
-        scene.add(anomalies);
+        sat2Geo.setAttribute('position', new THREE.Float32BufferAttribute(sat2Pos, 3));
+        const sat2Mat = new THREE.PointsMaterial({ size: 4, color: 0x00ffaa, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.6, depthWrite: false });
+        const satellite2 = new THREE.Points(sat2Geo, sat2Mat);
+        satellite2.position.set(-180, -120, 80);
+        
+        // Save original positions for vibration math
+        sat2Geo.userData = { originals: new Float32Array(sat2Pos) };
+        genesisGroup.add(satellite2);
 
-        // 6. ANIMATION LOOP
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX - window.innerWidth / 2) * 0.1;
-            mouseY = (e.clientY - window.innerHeight / 2) * 0.1;
+        scene.add(genesisGroup);
+
+        // 3. THE AMBIENT DUST (Deep space filler)
+        const dustGeo = new THREE.BufferGeometry();
+        const dustPos = [];
+        for (let i = 0; i < 3000; i++) dustPos.push((Math.random() - 0.5) * 3000, (Math.random() - 0.5) * 3000, 1500 - Math.random() * 4000);
+        dustGeo.setAttribute('position', new THREE.Float32BufferAttribute(dustPos, 3));
+        const dustMat = new THREE.PointsMaterial({ size: 2, color: 0x334455, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.3, depthWrite: false });
+        scene.add(new THREE.Points(dustGeo, dustMat));
+
+        // 4. PILOT CONTROLS (Scroll / Drag)
+        let isDragging = false;
+        let previousMouseY = 0;
+
+        window.addEventListener('wheel', (e) => { cameraTargetZ += e.deltaY * 0.8; });
+        window.addEventListener('mousedown', (e) => { isDragging = true; previousMouseY = e.clientY; });
+        window.addEventListener('mouseup', () => { isDragging = false; });
+        window.addEventListener('mousemove', (e) => {
+            if(isDragging) { cameraTargetZ -= (e.clientY - previousMouseY) * 4; previousMouseY = e.clientY; }
+        });
+        window.addEventListener('touchstart', (e) => { isDragging = true; previousMouseY = e.touches[0].clientY; });
+        window.addEventListener('touchend', () => { isDragging = false; });
+        window.addEventListener('touchmove', (e) => {
+            if(isDragging) { cameraTargetZ -= (e.touches[0].clientY - previousMouseY) * 4; previousMouseY = e.touches[0].clientY; }
         });
 
+        // 5. ANIMATION LOOP & PHYSICS
         const clock = new THREE.Clock();
+        const word1 = document.getElementById('word-1');
 
         function animate() {
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
 
-            camera.position.x += (mouseX - camera.position.x) * 0.05;
-            camera.position.y += (-mouseY - camera.position.y) * 0.05;
-            camera.lookAt(scene.position);
+            // Smooth Camera Piloting
+            camera.position.z += (cameraTargetZ - camera.position.z) * 0.05;
+            
+            // Bounds
+            if(cameraTargetZ > 1200) cameraTargetZ = 1200;
+            if(cameraTargetZ < -800) cameraTargetZ = -800;
 
-            ambientVoid.rotation.y = time * 0.01;
-
-            swarms.forEach(swarm => {
-                swarm.rotation.y += swarm.userData.rotSpeed;
-                swarm.rotation.x += swarm.userData.rotSpeed * 0.5;
-                swarm.position.x += swarm.userData.vx;
-                swarm.position.y += swarm.userData.vy;
-                swarm.position.z += swarm.userData.vz;
-
-                if (swarm.position.x > 1000) swarm.position.x = -1000;
-                if (swarm.position.x < -1000) swarm.position.x = 1000;
-                if (swarm.position.y > 800) swarm.position.y = -800;
-                if (swarm.position.y < -800) swarm.position.y = 800;
-                if (swarm.position.z > 800) swarm.position.z = -1200;
-                if (swarm.position.z < -1200) swarm.position.z = 800;
-            });
-
-            // SAFE UNDULATION MATH
-            aethers.forEach(aether => {
-                const pos = aether.geometry.attributes.position.array;
-                const orig = aether.geometry.userData.originals;
-                const freq = aether.userData.waveFreq;
-                const speed = aether.userData.waveSpeed;
-
-                for (let i = 0; i < pos.length; i += 3) {
-                    const x = orig[i];
-                    const y = orig[i+1];
-                    pos[i+2] = orig[i+2] + Math.sin(x * freq + time * speed) * Math.cos(y * freq + time * speed) * 30;
-                }
-                aether.geometry.attributes.position.needsUpdate = true;
-
-                aether.position.x += aether.userData.drift.x;
-                aether.position.y += aether.userData.drift.y;
-                aether.position.z += aether.userData.drift.z;
-                aether.rotation.z = Math.sin(time * 0.2) * 0.2;
-
-                if (aether.position.z > 800) aether.position.z = -1200;
-                if (aether.position.x > 1000) aether.position.x = -1000;
-                if (aether.position.x < -1000) aether.position.x = 1000;
-            });
-
-            const aPos = anomalies.geometry.attributes.position.array;
-            for (let i = 0; i < 15; i++) {
-                aPos[i * 3] += anomalyVelocities[i].x;
-                aPos[i * 3 + 1] += anomalyVelocities[i].y;
-                aPos[i * 3 + 2] += anomalyVelocities[i].z;
-                if (aPos[i * 3 + 2] > 600) { 
-                    aPos[i * 3] = (Math.random() - 0.5) * 1000;
-                    aPos[i * 3 + 1] = (Math.random() - 0.5) * 1000;
-                    aPos[i * 3 + 2] = -1500; 
-                }
+            // --- PARTICULATE TYPOGRAPHY LOGIC ---
+            // As camera passes Z=600, the dust forms the word "IS"
+            if (camera.position.z < 800 && camera.position.z > 400) {
+                const intensity = 1 - Math.abs(camera.position.z - 600) / 200; // Peaks at 600
+                word1.style.opacity = intensity;
+                word1.style.transform = `scale(${0.8 + intensity * 0.4})`;
+                word1.style.textShadow = `0 0 ${10 + intensity * 30}px rgba(0, 242, 255, ${intensity})`;
+            } else {
+                word1.style.opacity = 0;
             }
-            anomalies.geometry.attributes.position.needsUpdate = true;
+
+            // --- THE PULSE OF THE "IS" ---
+            
+            // Core: Slow, steady rotation and breathing (The Truth)
+            const coreScale = 1 + Math.sin(time * 1.5) * 0.05;
+            coreMesh.scale.set(coreScale, coreScale, coreScale);
+            genesisGroup.rotation.y = time * 0.05;
+            genesisGroup.rotation.x = Math.sin(time * 0.1) * 0.1;
+
+            // Satellite 1 (Established): Slow, heavy orbit
+            satellite1.position.x = Math.cos(time * 0.5) * 150;
+            satellite1.position.z = Math.sin(time * 0.5) * 150 - 50;
+
+            // Satellite 2 (Becoming): High Kinetic Vibration + Orbit
+            const sat2PosArray = satellite2.geometry.attributes.position.array;
+            const sat2Orig = satellite2.geometry.userData.originals;
+            for(let i=0; i<sat2PosArray.length; i+=3) {
+                // Rapid chaotic jitter applied to the original coordinates
+                sat2PosArray[i] = sat2Orig[i] + (Math.random()-0.5)*4;
+                sat2PosArray[i+1] = sat2Orig[i+1] + (Math.random()-0.5)*4;
+                sat2PosArray[i+2] = sat2Orig[i+2] + (Math.random()-0.5)*4;
+            }
+            satellite2.geometry.attributes.position.needsUpdate = true;
+            satellite2.position.x = Math.sin(time * 0.8) * 180;
+            satellite2.position.y = Math.cos(time * 0.6) * 120;
 
             renderer.render(scene, camera);
         }
