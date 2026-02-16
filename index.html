@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | Free Axis & The Essence</title>
+    <title>Jophi Universe | Fully Populated & Navigable</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010103; font-family: 'Inter', sans-serif; }
         #canvas-container { width: 100%; height: 100%; display: block; cursor: grab; }
@@ -13,29 +13,29 @@
         .label { font-size: 10px; letter-spacing: 3px; color: #00f2ff; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 242, 255, 0.8); }
         .sub { font-size: 8px; color: rgba(255, 255, 255, 0.6); margin-top: 5px; letter-spacing: 1px; }
         
-        #scroll-hint { position: absolute; bottom: 30px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 10px; letter-spacing: 2px; pointer-events: none; }
+        #scroll-hint { position: absolute; bottom: 30px; width: 100%; text-align: center; color: rgba(255,255,255,0.5); font-size: 10px; letter-spacing: 2px; pointer-events: none; }
 
         /* THE ESSENCE: The Email Box Overlay */
         #essence-ui {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 300px; padding: 30px; background: rgba(1, 1, 3, 0.4);
-            backdrop-filter: blur(15px); border: 1px solid rgba(0, 242, 255, 0.3);
-            text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.3s;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.1); border-radius: 4px; z-index: 20;
+            width: 320px; padding: 35px; background: rgba(5, 10, 20, 0.5);
+            backdrop-filter: blur(12px); border: 1px solid rgba(0, 242, 255, 0.4);
+            text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.5s ease-in-out;
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.15); border-radius: 4px; z-index: 20;
         }
-        #essence-ui h2 { margin: 0 0 15px 0; color: #fff; font-weight: 300; letter-spacing: 3px; font-size: 14px; text-transform: uppercase; }
+        #essence-ui h2 { margin: 0 0 15px 0; color: #fff; font-weight: 300; letter-spacing: 4px; font-size: 16px; text-transform: uppercase; }
         #essence-ui input[type="email"] {
-            width: 100%; padding: 10px; margin-bottom: 15px; background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(0, 242, 255, 0.5); color: #00f2ff; font-family: 'Inter', sans-serif;
+            width: 100%; padding: 12px; margin-bottom: 20px; background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(0, 242, 255, 0.3); color: #00f2ff; font-family: 'Inter', sans-serif;
             box-sizing: border-box; outline: none; letter-spacing: 1px;
         }
-        #essence-ui input[type="email"]::placeholder { color: rgba(0, 242, 255, 0.3); }
+        #essence-ui input[type="email"]::placeholder { color: rgba(0, 242, 255, 0.4); font-size: 10px; letter-spacing: 2px; }
         #essence-ui button {
-            width: 100%; padding: 10px; background: transparent; color: #00f2ff;
+            width: 100%; padding: 12px; background: rgba(0, 242, 255, 0.1); color: #00f2ff;
             border: 1px solid #00f2ff; cursor: pointer; text-transform: uppercase;
-            letter-spacing: 2px; font-size: 10px; transition: background 0.3s, color 0.3s;
+            letter-spacing: 3px; font-size: 11px; transition: all 0.3s;
         }
-        #essence-ui button:hover { background: #00f2ff; color: #000; }
+        #essence-ui button:hover { background: #00f2ff; color: #000; box-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
     </style>
 </head>
 <body>
@@ -47,10 +47,10 @@
     <div id="essence-ui">
         <h2>Enter the Is</h2>
         <input type="email" placeholder="YOUR EMAIL" id="user-email">
-        <button onclick="alert('Connection tethered to Jophi.')">Connect Tether</button>
+        <button onclick="alert('Handshake Initiated. Welcome to Jophi.')">Connect Tether</button>
     </div>
 
-    <div id="scroll-hint">SCROLL to Fly Forward // CLICK & DRAG to Rotate the Universe</div>
+    <div id="scroll-hint">SCROLL to pull the universe closer // CLICK & DRAG to look around</div>
     <div id="canvas-container"></div>
 
     <script type="importmap">
@@ -68,21 +68,23 @@
 
         // 1. SCENE SETUP
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x010103, 0.0008); 
+        scene.fog = new THREE.FogExp2(0x010103, 0.0009); 
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 4000);
-        camera.position.z = 800; // Start distance
+        camera.position.z = 700; 
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-        // 2. ORBIT CONTROLS (The Free Axis)
+        // 2. ORBIT CONTROLS (Native Zoom & Pan)
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
-        controls.enableZoom = false; // We use scroll wheel manually for Z-depth
+        controls.enableZoom = true;     // Restored native smooth zooming
+        controls.minDistance = 100;     // Prevents zooming completely through the UI
+        controls.maxDistance = 1500;    // Prevents flying out of the universe
         controls.enablePan = false;
 
         function getTexture() {
@@ -100,7 +102,7 @@
         }
         const particleTexture = getTexture();
 
-        // 3. THE PHILEAS NODE (The Human Seed)
+        // 3. THE PHILEAS NODE (The Individual / Genesis Node)
         const phileasGroup = new THREE.Group();
         phileasGroup.position.set(0, 0, 0); 
 
@@ -108,50 +110,79 @@
         const corePos = [];
         const coreColors = [];
         const coreSizes = [];
-        for (let i = 0; i < 500; i++) {
-            const r = 100 * Math.pow(Math.random(), 0.5);
+        for (let i = 0; i < 600; i++) {
+            const r = 120 * Math.pow(Math.random(), 0.5);
             const theta = Math.random() * 2 * Math.PI;
             const phi = Math.acos(2 * Math.random() - 1);
             corePos.push(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
             
-            const c = new THREE.Color(Math.random() > 0.5 ? 0xffffff : 0x00f2ff);
+            const c = new THREE.Color(Math.random() > 0.6 ? 0xffffff : 0x00f2ff); // Cyan & White
             coreColors.push(c.r, c.g, c.b);
-            coreSizes.push(4 + Math.random() * 15);
+            coreSizes.push(5 + Math.random() * 15);
         }
         coreGeo.setAttribute('position', new THREE.Float32BufferAttribute(corePos, 3));
         coreGeo.setAttribute('color', new THREE.Float32BufferAttribute(coreColors, 3));
         coreGeo.setAttribute('size', new THREE.Float32BufferAttribute(coreSizes, 1));
         
-        // Save material to memory so we can fade it later
         const phileasMat = new THREE.PointsMaterial({ size: 8, vertexColors: true, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 1.0, depthWrite: false });
         const phileasMesh = new THREE.Points(coreGeo, phileasMat);
         phileasGroup.add(phileasMesh);
         scene.add(phileasGroup);
 
-        // 4. THE AMBIENT UNIVERSE (Swarms in the background to grab and look at)
-        const universeGeo = new THREE.BufferGeometry();
-        const universePos = [];
-        for (let i = 0; i < 4000; i++) universePos.push((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
-        universeGeo.setAttribute('position', new THREE.Float32BufferAttribute(universePos, 3));
-        const universeMat = new THREE.PointsMaterial({ size: 3, color: 0x00ffaa, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.4, depthWrite: false });
-        const ambientUniverse = new THREE.Points(universeGeo, universeMat);
-        scene.add(ambientUniverse);
+        // 4. THE LIVING SKY (Restoring the Ecosystem)
+        const ecosystemGroups = [];
+        const species = [
+            { color: 0x00ffaa, count: 150, size: 6, spread: 250 }, // Non-Profit Colony
+            { color: 0x6600ff, count: 120, size: 8, spread: 200 }, // For-Profit Construct
+            { color: 0xffaa00, count: 200, size: 5, spread: 350 }  // VC Upwelling
+        ];
 
-        // 5. MANUAL SCROLL PILOTING (Z-Axis)
-        let cameraTargetZ = 800;
-        window.addEventListener('wheel', (e) => { cameraTargetZ += e.deltaY * 0.8; });
+        // Create 8 massive background clusters
+        for(let i = 0; i < 8; i++) {
+            const type = species[i % species.length];
+            const clusterGroup = new THREE.Group();
+            
+            // Randomly position them far out in the space
+            clusterGroup.position.set(
+                (Math.random() - 0.5) * 2000, 
+                (Math.random() - 0.5) * 2000, 
+                (Math.random() - 0.5) * 2000
+            );
 
-        // Touch for forward movement (2 fingers to scroll forward, 1 to rotate)
-        let prevTouchY = 0;
-        window.addEventListener('touchstart', (e) => { if(e.touches.length > 1) prevTouchY = e.touches[0].clientY; });
-        window.addEventListener('touchmove', (e) => {
-            if(e.touches.length > 1) {
-                cameraTargetZ -= (e.touches[0].clientY - prevTouchY) * 3;
-                prevTouchY = e.touches[0].clientY;
+            // Add autonomous drift vectors
+            clusterGroup.userData = {
+                vx: (Math.random() - 0.5) * 0.8,
+                vy: (Math.random() - 0.5) * 0.8,
+                vz: (Math.random() - 0.5) * 0.8,
+                rot: (Math.random() - 0.5) * 0.01
+            };
+
+            const clGeo = new THREE.BufferGeometry();
+            const clPos = [];
+            for(let j=0; j<type.count; j++) {
+                clPos.push(
+                    (Math.random() - 0.5) * type.spread,
+                    (Math.random() - 0.5) * type.spread,
+                    (Math.random() - 0.5) * type.spread
+                );
             }
-        });
+            clGeo.setAttribute('position', new THREE.Float32BufferAttribute(clPos, 3));
+            const clMat = new THREE.PointsMaterial({ size: type.size, color: type.color, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.6, depthWrite: false });
+            clusterGroup.add(new THREE.Points(clGeo, clMat));
 
-        // 6. ANIMATION LOOP & THE ESSENCE DISSOLVE
+            scene.add(clusterGroup);
+            ecosystemGroups.push(clusterGroup);
+        }
+
+        // AMBIENT DUST
+        const dustGeo = new THREE.BufferGeometry();
+        const dustPos = [];
+        for (let i = 0; i < 3000; i++) dustPos.push((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
+        dustGeo.setAttribute('position', new THREE.Float32BufferAttribute(dustPos, 3));
+        const dustMat = new THREE.PointsMaterial({ size: 2, color: 0x334455, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.3, depthWrite: false });
+        scene.add(new THREE.Points(dustGeo, dustMat));
+
+        // 5. ANIMATION LOOP & THE ESSENCE DISSOLVE
         const clock = new THREE.Clock();
         const essenceUI = document.getElementById('essence-ui');
 
@@ -159,54 +190,14 @@
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
 
-            controls.update(); // Keep the 360 drag smooth
-
-            // Pilot the Z-Axis
-            camera.position.z += (cameraTargetZ - camera.position.z) * 0.05;
-            
-            // Limit travel distance
-            if(cameraTargetZ > 1500) cameraTargetZ = 1500;
-            if(cameraTargetZ < -500) cameraTargetZ = -500;
+            controls.update(); // Smooths the panning and zooming
 
             // --- THE MINORITY REPORT DISSOLVE LOGIC ---
-            // Calculate how close the camera is to the Phileas Node
+            // Calculate actual camera distance to the Phileas Node
             const distance = camera.position.distanceTo(phileasGroup.position);
-            const fadeThreshold = 300; // When to start dissolving
+            const fadeThreshold = 350; // Distance at which dissolve starts
 
             if (distance < fadeThreshold) {
-                // Fade out the 3D particles
+                // Fade out the 3D particles based on proximity
                 const opacityPercent = distance / fadeThreshold;
-                phileasMat.opacity = Math.max(0, opacityPercent);
-                
-                // Fade IN the Essence (The Email Box)
-                const uiOpacity = 1 - opacityPercent;
-                essenceUI.style.opacity = uiOpacity;
-                
-                // Make the UI clickable only when mostly visible
-                if(uiOpacity > 0.5) {
-                    essenceUI.style.pointerEvents = 'auto';
-                } else {
-                    essenceUI.style.pointerEvents = 'none';
-                }
-            } else {
-                phileasMat.opacity = 1.0;
-                essenceUI.style.opacity = 0;
-                essenceUI.style.pointerEvents = 'none';
-            }
-
-            // Pulse and rotate the universe
-            phileasGroup.rotation.y = time * 0.05;
-            ambientUniverse.rotation.y = time * 0.01;
-
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-    </script>
-</body>
-</html>
+                phileasMat.opacity = Math.max(0, opacityPercent
