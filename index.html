@@ -3,24 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | The Density Gate</title>
+    <title>Jophi Universe | The Swoof</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010103; font-family: 'Inter', sans-serif; color: #fff; }
         #canvas-container { width: 100%; height: 100%; display: block; }
         
-        /* The Density Gate Overlay */
-        #gate-overlay {
+        #hud { position: absolute; top: 40px; right: 40px; z-index: 100; text-align: right; transition: opacity 1s; }
+        .logo { font-size: 18px; font-weight: 200; letter-spacing: 4px; color: #00f2ff; margin-bottom: 25px; text-transform: lowercase; }
+
+        /* The Foyer Overlay */
+        #foyer-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            pointer-events: none; opacity: 0; transition: opacity 1.5s ease;
-            z-index: 200;
+            pointer-events: none; opacity: 0; transition: opacity 2s ease; z-index: 200;
         }
-        #gate-overlay.active { opacity: 1; pointer-events: auto; }
+        #foyer-overlay.active { opacity: 1; pointer-events: auto; }
 
-        /* Watery Periscope Scan Effect */
         #scan-line {
-            position: absolute; top: -10%; left: 0; width: 100%; height: 20%;
-            background: linear-gradient(to bottom, transparent, rgba(0, 242, 255, 0.2), transparent);
+            position: absolute; top: -10%; left: 0; width: 100%; height: 30%;
+            background: linear-gradient(to bottom, transparent, rgba(0, 242, 255, 0.4), transparent);
             display: none; z-index: 210;
         }
 
@@ -29,88 +30,125 @@
             cursor: pointer; opacity: 0.6; transition: 0.8s; text-transform: lowercase;
             padding: 15px 40px; border: 1px solid transparent;
         }
-        .node-choice:hover { opacity: 1; border: 1px solid rgba(0, 242, 255, 0.3); text-shadow: 0 0 15px #00f2ff; }
+        .node-choice:hover { opacity: 1; border: 1px solid rgba(0, 242, 255, 0.5); text-shadow: 0 0 20px #00f2ff; }
 
-        #tether-trigger {
-            position: absolute; bottom: 10%; width: 100%; text-align: center;
-            z-index: 100; cursor: pointer; font-size: 10px; letter-spacing: 3px; color: #00f2ff;
+        #tether-btn { 
+            background: transparent; border: 1px solid #00f2ff; color: #00f2ff; 
+            padding: 15px 40px; cursor: pointer; letter-spacing: 4px; font-size: 10px;
+            transition: 0.5s;
         }
+        #tether-btn:hover { background: #00f2ff; color: #000; box-shadow: 0 0 30px rgba(0,242,255,0.5); }
     </style>
 </head>
 <body>
 
-    <div id="tether-trigger" onclick="initiateClearance()">[ initiate tether ]</div>
+    <div id="hud">
+        <div class="logo">jophi universe</div>
+        <button id="tether-btn">tether to substrate</button>
+    </div>
 
     <div id="scan-line"></div>
 
-    <div id="gate-overlay">
-        <div style="font-size: 9px; letter-spacing: 8px; margin-bottom: 50px; opacity: 0.5;">select emergence level</div>
-        <div class="node-choice" onclick="selectLevel('be')">just be</div>
-        <div class="node-choice" onclick="selectLevel('reef')">individual reef</div>
-        <div class="node-choice" onclick="selectLevel('build')">entrepreneur / build</div>
-        <div style="font-size: 8px; margin-top: 40px; color: rgba(255,255,255,0.2);">asheville anchor: verified</div>
+    <div id="foyer-overlay">
+        <div style="font-size: 10px; letter-spacing: 10px; margin-bottom: 60px; color: #fff;">foyer : asheville anchor</div>
+        <div class="node-choice" onclick="enterReef('be')">just be</div>
+        <div class="node-choice" onclick="enterReef('reef')">individual reef</div>
+        <div class="node-choice" onclick="enterReef('build')">build / entrepreneur</div>
     </div>
 
     <div id="canvas-container"></div>
 
     <script type="importmap">
-        { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+        { "imports": { 
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
+        } }
     </script>
 
     <script type="module">
         import * as THREE from 'three';
+        import { initializeApp } from 'firebase/app';
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'firebase/auth';
 
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_ta8hLzrOCwpzUL4Wmcua0KzGgggeuS4",
+            authDomain: "jophi-universe.firebaseapp.com",
+            projectId: "jophi-universe",
+            storageBucket: "jophi-universe.firebasestorage.app",
+            messagingSenderId: "834755108312",
+            appId: "1:834755108312:web:b25430f7a687b41b5666ad"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // SCENE SETUP
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-        camera.position.z = 600;
+        camera.position.z = 800;
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-        // Universe Swarm
-        const pGeo = new THREE.IcosahedronGeometry(200, 2);
-        const pMat = new THREE.PointsMaterial({ size: 2, color: 0x00f2ff, transparent: true, opacity: 0.3 });
+        const pGeo = new THREE.BufferGeometry();
+        const particlesCount = 4000;
+        const pos = new Float32Array(particlesCount * 3);
+        for(let i=0; i<particlesCount*3; i++) pos[i] = (Math.random()-0.5) * 1200;
+        pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        const pMat = new THREE.PointsMaterial({ size: 1.5, color: 0x00f2ff, transparent: true, opacity: 0.4 });
         const swarm = new THREE.Points(pGeo, pMat);
         scene.add(swarm);
 
-        window.initiateClearance = () => {
-            document.getElementById('tether-trigger').style.display = 'none';
+        // THE SWOOF LOGIC
+        const triggerSwoof = () => {
+            document.getElementById('hud').style.opacity = '0';
             const scanner = document.getElementById('scan-line');
             scanner.style.display = 'block';
             
-            // Periscope Scan Animation
             let pos = -10;
             const interval = setInterval(() => {
-                pos += 2;
+                pos += 1.5;
                 scanner.style.top = pos + '%';
                 if (pos > 110) {
                     clearInterval(interval);
                     scanner.style.display = 'none';
-                    document.getElementById('gate-overlay').classList.add('active');
-                    pMat.color.set(0xffffff);
-                    pMat.opacity = 0.6;
+                    document.getElementById('foyer-overlay').classList.add('active');
+                    // Buoyant Lift
+                    gsap_lift(400); 
                 }
-            }, 20);
+            }, 16);
         };
 
-        window.selectLevel = (type) => {
-            document.getElementById('gate-overlay').classList.remove('active');
-            // Shift camera for "Weightless Lift"
-            const targetZ = type === 'build' ? 300 : 500;
-            const animateLift = () => {
-                if(Math.abs(camera.position.z - targetZ) > 1) {
-                    camera.position.z += (targetZ - camera.position.z) * 0.05;
-                    requestAnimationFrame(animateLift);
+        const gsap_lift = (targetZ) => {
+            const move = () => {
+                if(Math.abs(camera.position.z - targetZ) > 0.5) {
+                    camera.position.z += (targetZ - camera.position.z) * 0.03;
+                    requestAnimationFrame(move);
                 }
             };
-            animateLift();
-            pMat.color.set(0x00f2ff);
-            alert(`Emergence level ${type} established. Entering foyer...`);
+            move();
+        };
+
+        // AUTH TRIGGER
+        document.getElementById('tether-btn').onclick = () => signInWithPopup(auth, provider);
+
+        // AUTO-DETECTION
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("Tether verified.");
+                triggerSwoof();
+            }
+        });
+
+        window.enterReef = (level) => {
+            alert(`Entering the ${level} state...`);
+            // Here is where we will manifest Phase 3: The Customs Hall
         };
 
         function animate() {
             requestAnimationFrame(animate);
-            swarm.rotation.y += 0.001;
+            swarm.rotation.y += 0.0005;
             renderer.render(scene, camera);
         }
         animate();
