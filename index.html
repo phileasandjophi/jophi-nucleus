@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | The Cybernetic Handshake</title>
+    <title>Jophi Universe | The First Tether</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010103; font-family: 'Inter', sans-serif; color: #fff; }
         #canvas-container { width: 100%; height: 100%; display: block; cursor: grab; }
-        
         #hud { position: absolute; top: 40px; right: 40px; z-index: 100; text-align: right; }
         .logo { font-size: 18px; font-weight: 200; letter-spacing: 4px; color: #00f2ff; margin-bottom: 25px; text-transform: lowercase; cursor: pointer; }
         .nav-item { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.4); margin-bottom: 12px; cursor: pointer; transition: 0.5s ease; text-transform: lowercase; }
@@ -15,23 +14,19 @@
         .cybernetic { font-size: 10px; color: #00f2ff; margin-top: 25px; letter-spacing: 3px; cursor: pointer; opacity: 0.6; transition: 0.5s; text-transform: lowercase; }
         .cybernetic:hover { opacity: 1; text-shadow: 0 0 10px #00f2ff; }
 
-        /* The Definition & Entry Portal */
         #portal-overlay {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 500px; text-align: center; pointer-events: none; opacity: 0; 
-            transition: opacity 1s, filter 1s, transform 0.8s ease-out;
+            transition: opacity 1s, filter 1s, transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
             filter: blur(15px);
         }
         #portal-overlay.active { opacity: 1; filter: blur(0px); transform: translate(-50%, -50%) scale(1); }
-        
         .portal-title { font-size: 13px; letter-spacing: 6px; color: #fff; margin-bottom: 20px; text-transform: lowercase; }
         .portal-text { font-size: 14px; font-weight: 300; line-height: 2; color: rgba(255,255,255,0.8); letter-spacing: 0.5px; }
 
-        /* Input Essence */
-        #input-essence { margin-top: 20px; display: none; pointer-events: auto; }
-        #input-essence input { background: transparent; border: none; border-bottom: 1px solid #00f2ff; color: #00f2ff; padding: 10px; text-align: center; width: 200px; outline: none; font-size: 12px; letter-spacing: 1px; }
-        #input-essence button { background: transparent; border: 1px solid #00f2ff; color: #00f2ff; padding: 8px 20px; margin-top: 20px; cursor: pointer; text-transform: lowercase; letter-spacing: 2px; font-size: 10px; }
-        #input-essence button:hover { background: #00f2ff; color: #000; }
+        #tether-control { margin-top: 30px; display: none; pointer-events: auto; }
+        #tether-btn { background: transparent; border: 1px solid #00f2ff; color: #00f2ff; padding: 12px 30px; cursor: pointer; text-transform: lowercase; letter-spacing: 3px; font-size: 11px; transition: 0.3s; }
+        #tether-btn:hover { background: #00f2ff; color: #000; box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
     </style>
 </head>
 <body>
@@ -46,31 +41,48 @@
     <div id="portal-overlay">
         <div class="portal-title" id="p-title"></div>
         <div class="portal-text" id="p-text"></div>
-        <div id="input-essence">
-            <input type="email" placeholder="enter email" id="email-field">
-            <br>
-            <button onclick="tetherAction()">tether</button>
+        <div id="tether-control">
+            <button id="tether-btn">tether</button>
         </div>
     </div>
 
     <div id="canvas-container"></div>
 
     <script type="importmap">
-        { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+        { "imports": { 
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
+        } }
     </script>
 
     <script type="module">
         import * as THREE from 'three';
+        import { initializeApp } from 'firebase/app';
+        import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
+        // 1. FIREBASE INITIALIZATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_ta8hLzrOCwpzUL4Wmcua0KzGgggeuS4",
+            authDomain: "jophi-universe.firebaseapp.com",
+            projectId: "jophi-universe",
+            storageBucket: "jophi-universe.firebasestorage.app",
+            messagingSenderId: "834755108312",
+            appId: "1:834755108312:web:b25430f7a687b41b5666ad",
+            measurementId: "G-E7CXQ6T235"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // 2. THE UNIVERSE (Swarm Physics)
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
         camera.position.z = 600;
-
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-        // --- SWARM ---
         const particlesCount = 3500;
         const pGeo = new THREE.BufferGeometry();
         const positions = new Float32Array(particlesCount * 3);
@@ -87,40 +99,52 @@
         const swarm = new THREE.Points(pGeo, pMat);
         scene.add(swarm);
 
-        // --- DEFINITIONS ---
+        // 3. INTERFACE LOGIC
         const definitions = {
             jophi: { title: "the jophi universe", text: "an advanced, frictionless economic and social operating system designed to replace opaque, extraction-based markets ('the mall') with a transparent, abundance-driven network of net positive redundancy." },
             bluee: { title: "b.l.u.e.e. protocol", text: "bi-directional ledger for universal evolutionary expansion. the 'prōtokollon': the first sheet glued; the absolute verification of authenticity; the handshake." },
             reef: { title: "r.e.e.f.", text: "reciprocal ecosystem for ecological flourishing. everyone deserves a reef—solitude, budding, upwelling, expansion." },
-            tether: { title: "emerge here", text: "initiate your connection to the substrate." }
+            tether: { title: "cybernetic node", text: "initiate your connection to the substrate." }
         };
 
         window.showPortal = (key) => {
             document.getElementById('p-title').innerText = definitions[key].title;
             document.getElementById('p-text').innerText = definitions[key].text;
-            document.getElementById('input-essence').style.display = (key === 'tether') ? 'block' : 'none';
+            document.getElementById('tether-control').style.display = (key === 'tether') ? 'block' : 'none';
             document.getElementById('portal-overlay').classList.add('active');
             pMat.color.set(0xffffff);
         };
 
         window.hidePortal = () => {
-            if (document.activeElement.id !== 'email-field') {
-                document.getElementById('portal-overlay').classList.remove('active');
-                pMat.color.set(0x00f2ff);
-            }
+            document.getElementById('portal-overlay').classList.remove('active');
+            pMat.color.set(0x00f2ff);
         };
 
-        window.tetherAction = () => {
-            // Implosion Visual
-            pMat.color.set(0xffffff);
-            document.getElementById('portal-overlay').style.transform = "translate(-50%, -50%) scale(0)";
-            document.getElementById('portal-overlay').style.opacity = "0";
-            setTimeout(() => {
-                alert("Tether established.");
-                document.getElementById('portal-overlay').classList.remove('active');
-                document.getElementById('portal-overlay').style.transform = "translate(-50%, -50%) scale(1)";
-                pMat.color.set(0x00f2ff);
-            }, 1000);
+        // THE LIVE TETHER ACTION
+        document.getElementById('tether-btn').onclick = async () => {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                
+                // Visual Handshake Implosion
+                document.getElementById('p-title').innerText = "tether established";
+                document.getElementById('p-text').innerText = `welcome back to the substrate, ${user.displayName.toLowerCase()}.`;
+                document.getElementById('tether-control').style.display = 'none';
+                
+                // Pulse the universe white
+                pMat.color.set(0xffffff);
+                pMat.size = 5;
+                
+                setTimeout(() => {
+                    document.getElementById('portal-overlay').classList.remove('active');
+                    pMat.color.set(0x00f2ff);
+                    pMat.size = 1.8;
+                }, 3000);
+
+            } catch (error) {
+                console.error("Handshake failed:", error);
+                alert("The handshake was interrupted. Please try again.");
+            }
         };
 
         let clock = new THREE.Clock();
