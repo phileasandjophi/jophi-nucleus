@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | Fully Populated & Navigable</title>
+    <title>Jophi Universe | The Flawless Orbit</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010103; font-family: 'Inter', sans-serif; }
         #canvas-container { width: 100%; height: 100%; display: block; cursor: grab; }
@@ -13,14 +13,14 @@
         .label { font-size: 10px; letter-spacing: 3px; color: #00f2ff; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 242, 255, 0.8); }
         .sub { font-size: 8px; color: rgba(255, 255, 255, 0.6); margin-top: 5px; letter-spacing: 1px; }
         
-        #scroll-hint { position: absolute; bottom: 30px; width: 100%; text-align: center; color: rgba(255,255,255,0.5); font-size: 10px; letter-spacing: 2px; pointer-events: none; }
+        #scroll-hint { position: absolute; bottom: 30px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 10px; letter-spacing: 2px; pointer-events: none; }
 
         /* THE ESSENCE: The Email Box Overlay */
         #essence-ui {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 320px; padding: 35px; background: rgba(5, 10, 20, 0.5);
             backdrop-filter: blur(12px); border: 1px solid rgba(0, 242, 255, 0.4);
-            text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.5s ease-in-out;
+            text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease-out;
             box-shadow: 0 0 40px rgba(0, 242, 255, 0.15); border-radius: 4px; z-index: 20;
         }
         #essence-ui h2 { margin: 0 0 15px 0; color: #fff; font-weight: 300; letter-spacing: 4px; font-size: 16px; text-transform: uppercase; }
@@ -50,42 +50,30 @@
         <button onclick="alert('Handshake Initiated. Welcome to Jophi.')">Connect Tether</button>
     </div>
 
-    <div id="scroll-hint">SCROLL to pull the universe closer // CLICK & DRAG to look around</div>
+    <div id="scroll-hint">SCROLL to pull the universe closer // CLICK & DRAG to orbit the center</div>
     <div id="canvas-container"></div>
 
     <script type="importmap">
         {
             "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-                "orbitControls": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js"
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
             }
         }
     </script>
 
     <script type="module">
         import * as THREE from 'three';
-        import { OrbitControls } from 'orbitControls';
 
         // 1. SCENE SETUP
         const scene = new THREE.Scene();
         scene.fog = new THREE.FogExp2(0x010103, 0.0009); 
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 4000);
-        camera.position.z = 700; 
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         document.getElementById('canvas-container').appendChild(renderer.domElement);
-
-        // 2. ORBIT CONTROLS (Native Zoom & Pan)
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.enableZoom = true;     // Restored native smooth zooming
-        controls.minDistance = 100;     // Prevents zooming completely through the UI
-        controls.maxDistance = 1500;    // Prevents flying out of the universe
-        controls.enablePan = false;
 
         function getTexture() {
             const canvas = document.createElement('canvas');
@@ -102,10 +90,8 @@
         }
         const particleTexture = getTexture();
 
-        // 3. THE PHILEAS NODE (The Individual / Genesis Node)
+        // 2. THE PHILEAS NODE (The Genesis Anchor at 0,0,0)
         const phileasGroup = new THREE.Group();
-        phileasGroup.position.set(0, 0, 0); 
-
         const coreGeo = new THREE.BufferGeometry();
         const corePos = [];
         const coreColors = [];
@@ -129,7 +115,7 @@
         phileasGroup.add(phileasMesh);
         scene.add(phileasGroup);
 
-        // 4. THE LIVING SKY (Restoring the Ecosystem)
+        // 3. THE ECOSYSTEM (Swarms in the background)
         const ecosystemGroups = [];
         const species = [
             { color: 0x00ffaa, count: 150, size: 6, spread: 250 }, // Non-Profit Colony
@@ -137,39 +123,26 @@
             { color: 0xffaa00, count: 200, size: 5, spread: 350 }  // VC Upwelling
         ];
 
-        // Create 8 massive background clusters
         for(let i = 0; i < 8; i++) {
             const type = species[i % species.length];
             const clusterGroup = new THREE.Group();
-            
-            // Randomly position them far out in the space
             clusterGroup.position.set(
                 (Math.random() - 0.5) * 2000, 
                 (Math.random() - 0.5) * 2000, 
                 (Math.random() - 0.5) * 2000
             );
-
-            // Add autonomous drift vectors
             clusterGroup.userData = {
-                vx: (Math.random() - 0.5) * 0.8,
-                vy: (Math.random() - 0.5) * 0.8,
-                vz: (Math.random() - 0.5) * 0.8,
-                rot: (Math.random() - 0.5) * 0.01
+                vx: (Math.random() - 0.5) * 0.8, vy: (Math.random() - 0.5) * 0.8, vz: (Math.random() - 0.5) * 0.8, rot: (Math.random() - 0.5) * 0.01
             };
 
             const clGeo = new THREE.BufferGeometry();
             const clPos = [];
             for(let j=0; j<type.count; j++) {
-                clPos.push(
-                    (Math.random() - 0.5) * type.spread,
-                    (Math.random() - 0.5) * type.spread,
-                    (Math.random() - 0.5) * type.spread
-                );
+                clPos.push((Math.random() - 0.5) * type.spread, (Math.random() - 0.5) * type.spread, (Math.random() - 0.5) * type.spread);
             }
             clGeo.setAttribute('position', new THREE.Float32BufferAttribute(clPos, 3));
             const clMat = new THREE.PointsMaterial({ size: type.size, color: type.color, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.6, depthWrite: false });
             clusterGroup.add(new THREE.Points(clGeo, clMat));
-
             scene.add(clusterGroup);
             ecosystemGroups.push(clusterGroup);
         }
@@ -182,6 +155,43 @@
         const dustMat = new THREE.PointsMaterial({ size: 2, color: 0x334455, map: particleTexture, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.3, depthWrite: false });
         scene.add(new THREE.Points(dustGeo, dustMat));
 
+        // 4. BULLETPROOF RAW ORBITAL PHYSICS (No Plugins Required)
+        let isDragging = false;
+        let prevX = 0, prevY = 0;
+        let targetAngleX = 0, targetAngleY = 0;
+        let currentAngleX = 0, currentAngleY = 0;
+        let targetRadius = 700, currentRadius = 700;
+
+        window.addEventListener('mousedown', (e) => { isDragging = true; prevX = e.clientX; prevY = e.clientY; });
+        window.addEventListener('mouseup', () => isDragging = false);
+        window.addEventListener('mousemove', (e) => {
+            if(isDragging) {
+                targetAngleY -= (e.clientX - prevX) * 0.005;
+                targetAngleX += (e.clientY - prevY) * 0.005;
+                // Prevent flipping the camera upside down
+                targetAngleX = Math.max(-Math.PI/2.1, Math.min(Math.PI/2.1, targetAngleX));
+                prevX = e.clientX; prevY = e.clientY;
+            }
+        });
+
+        // Touch Support
+        window.addEventListener('touchstart', (e) => { isDragging = true; prevX = e.touches[0].clientX; prevY = e.touches[0].clientY; });
+        window.addEventListener('touchend', () => { isDragging = false; });
+        window.addEventListener('touchmove', (e) => {
+            if(isDragging) {
+                targetAngleY -= (e.touches[0].clientX - prevX) * 0.005;
+                targetAngleX += (e.touches[0].clientY - prevY) * 0.005;
+                targetAngleX = Math.max(-Math.PI/2.1, Math.min(Math.PI/2.1, targetAngleX));
+                prevX = e.touches[0].clientX; prevY = e.touches[0].clientY;
+            }
+        });
+
+        // Scroll to Zoom
+        window.addEventListener('wheel', (e) => {
+            targetRadius += e.deltaY * 0.8;
+            targetRadius = Math.max(50, Math.min(1500, targetRadius)); // Bounds of the universe
+        });
+
         // 5. ANIMATION LOOP & THE ESSENCE DISSOLVE
         const clock = new THREE.Clock();
         const essenceUI = document.getElementById('essence-ui');
@@ -190,14 +200,9 @@
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
 
-            controls.update(); // Smooths the panning and zooming
+            // Smoothly calculate current orbital position
+            currentAngleX += (targetAngleX - currentAngleX) * 0.1;
+            currentAngleY += (targetAngleY - currentAngleY) * 0.1;
+            currentRadius += (targetRadius - currentRadius) * 0.1;
 
-            // --- THE MINORITY REPORT DISSOLVE LOGIC ---
-            // Calculate actual camera distance to the Phileas Node
-            const distance = camera.position.distanceTo(phileasGroup.position);
-            const fadeThreshold = 350; // Distance at which dissolve starts
-
-            if (distance < fadeThreshold) {
-                // Fade out the 3D particles based on proximity
-                const opacityPercent = distance / fadeThreshold;
-                phileasMat.opacity = Math.max(0, opacityPercent
+            // Apply Raw Orbital Math to
