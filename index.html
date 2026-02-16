@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | The Wisp & The Return</title>
+    <title>Jophi Universe | The Cybernetic Handshake</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010103; font-family: 'Inter', sans-serif; color: #fff; }
         #canvas-container { width: 100%; height: 100%; display: block; cursor: grab; }
@@ -12,20 +12,26 @@
         .logo { font-size: 18px; font-weight: 200; letter-spacing: 4px; color: #00f2ff; margin-bottom: 25px; text-transform: lowercase; cursor: pointer; }
         .nav-item { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.4); margin-bottom: 12px; cursor: pointer; transition: 0.5s ease; text-transform: lowercase; }
         .nav-item:hover { color: #fff; }
+        .cybernetic { font-size: 10px; color: #00f2ff; margin-top: 25px; letter-spacing: 3px; cursor: pointer; opacity: 0.6; transition: 0.5s; text-transform: lowercase; }
+        .cybernetic:hover { opacity: 1; text-shadow: 0 0 10px #00f2ff; }
 
-        /* The Definition Portal - Centered and Distinct */
+        /* The Definition & Entry Portal */
         #portal-overlay {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 500px; text-align: center; pointer-events: none; opacity: 0; 
-            transition: opacity 1.5s ease, filter 1.5s ease, transform 1.2s ease;
+            transition: opacity 1s, filter 1s, transform 0.8s ease-out;
             filter: blur(15px);
         }
         #portal-overlay.active { opacity: 1; filter: blur(0px); transform: translate(-50%, -50%) scale(1); }
         
-        .portal-title { font-size: 13px; letter-spacing: 6px; color: #fff; margin-bottom: 20px; text-transform: lowercase; text-shadow: 0 0 15px rgba(255,255,255,0.5); }
-        .portal-text { font-size: 14px; font-weight: 300; line-height: 2; color: rgba(255,255,255,0.85); letter-spacing: 0.5px; }
-        
-        #scroll-hint { position: absolute; bottom: 40px; width: 100%; text-align: center; font-size: 8px; letter-spacing: 4px; color: rgba(255,255,255,0.2); text-transform: lowercase; }
+        .portal-title { font-size: 13px; letter-spacing: 6px; color: #fff; margin-bottom: 20px; text-transform: lowercase; }
+        .portal-text { font-size: 14px; font-weight: 300; line-height: 2; color: rgba(255,255,255,0.8); letter-spacing: 0.5px; }
+
+        /* Input Essence */
+        #input-essence { margin-top: 20px; display: none; pointer-events: auto; }
+        #input-essence input { background: transparent; border: none; border-bottom: 1px solid #00f2ff; color: #00f2ff; padding: 10px; text-align: center; width: 200px; outline: none; font-size: 12px; letter-spacing: 1px; }
+        #input-essence button { background: transparent; border: 1px solid #00f2ff; color: #00f2ff; padding: 8px 20px; margin-top: 20px; cursor: pointer; text-transform: lowercase; letter-spacing: 2px; font-size: 10px; }
+        #input-essence button:hover { background: #00f2ff; color: #000; }
     </style>
 </head>
 <body>
@@ -34,15 +40,19 @@
         <div class="logo" onmouseenter="showPortal('jophi')" onmouseleave="hidePortal()">jophi universe</div>
         <div class="nav-item" onmouseenter="showPortal('bluee')" onmouseleave="hidePortal()">b.l.u.e.e. protocol</div>
         <div class="nav-item" onmouseenter="showPortal('reef')" onmouseleave="hidePortal()">r.e.e.f.</div>
-        <div class="nav-item" style="margin-top:20px; opacity: 0.3;">cybernetic node</div>
+        <div class="cybernetic" onmouseenter="showPortal('tether')" onmouseleave="hidePortal()">cybernetic node</div>
     </div>
 
     <div id="portal-overlay">
         <div class="portal-title" id="p-title"></div>
         <div class="portal-text" id="p-text"></div>
+        <div id="input-essence">
+            <input type="email" placeholder="enter email" id="email-field">
+            <br>
+            <button onclick="tetherAction()">tether</button>
+        </div>
     </div>
 
-    <div id="scroll-hint">scroll to approach the is</div>
     <div id="canvas-container"></div>
 
     <script type="importmap">
@@ -60,64 +70,71 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-        // --- THE FLOATING SQUARE UNIVERSE ---
-        const particlesCount = 3000;
+        // --- SWARM ---
+        const particlesCount = 3500;
         const pGeo = new THREE.BufferGeometry();
         const positions = new Float32Array(particlesCount * 3);
         const originalPositions = new Float32Array(particlesCount * 3);
-        const wispSpeeds = new Float32Array(particlesCount);
-        
         for(let i=0; i < particlesCount; i++) {
-            // "Floaty Square" logic: Randomizing within a cube but drifting
-            const x = (Math.random() - 0.5) * 350;
-            const y = (Math.random() - 0.5) * 350;
-            const z = (Math.random() - 0.5) * 350;
+            const x = (Math.random() - 0.5) * 380;
+            const y = (Math.random() - 0.5) * 380;
+            const z = (Math.random() - 0.5) * 380;
             positions[i*3] = x; positions[i*3+1] = y; positions[i*3+2] = z;
             originalPositions[i*3] = x; originalPositions[i*3+1] = y; originalPositions[i*3+2] = z;
-            wispSpeeds[i] = Math.random() * 0.02;
         }
-        
         pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         const pMat = new THREE.PointsMaterial({ size: 1.8, color: 0x00f2ff, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending });
         const swarm = new THREE.Points(pGeo, pMat);
         scene.add(swarm);
 
-        // --- INTERACTION ---
+        // --- DEFINITIONS ---
         const definitions = {
             jophi: { title: "the jophi universe", text: "an advanced, frictionless economic and social operating system designed to replace opaque, extraction-based markets ('the mall') with a transparent, abundance-driven network of net positive redundancy." },
             bluee: { title: "b.l.u.e.e. protocol", text: "bi-directional ledger for universal evolutionary expansion. the 'prōtokollon': the first sheet glued; the absolute verification of authenticity; the handshake." },
-            reef: { title: "r.e.e.f.", text: "reciprocal ecosystem for ecological flourishing. everyone deserves a reef—solitude, budding, upwelling, expansion." }
+            reef: { title: "r.e.e.f.", text: "reciprocal ecosystem for ecological flourishing. everyone deserves a reef—solitude, budding, upwelling, expansion." },
+            tether: { title: "emerge here", text: "initiate your connection to the substrate." }
         };
 
         window.showPortal = (key) => {
             document.getElementById('p-title').innerText = definitions[key].title;
             document.getElementById('p-text').innerText = definitions[key].text;
+            document.getElementById('input-essence').style.display = (key === 'tether') ? 'block' : 'none';
             document.getElementById('portal-overlay').classList.add('active');
-            pMat.opacity = 0.8;
+            pMat.color.set(0xffffff);
         };
 
         window.hidePortal = () => {
-            document.getElementById('portal-overlay').classList.remove('active');
-            pMat.opacity = 0.5;
+            if (document.activeElement.id !== 'email-field') {
+                document.getElementById('portal-overlay').classList.remove('active');
+                pMat.color.set(0x00f2ff);
+            }
         };
 
-        // --- ANIMATION ---
+        window.tetherAction = () => {
+            // Implosion Visual
+            pMat.color.set(0xffffff);
+            document.getElementById('portal-overlay').style.transform = "translate(-50%, -50%) scale(0)";
+            document.getElementById('portal-overlay').style.opacity = "0";
+            setTimeout(() => {
+                alert("Tether established.");
+                document.getElementById('portal-overlay').classList.remove('active');
+                document.getElementById('portal-overlay').style.transform = "translate(-50%, -50%) scale(1)";
+                pMat.color.set(0x00f2ff);
+            }, 1000);
+        };
+
         let clock = new THREE.Clock();
         function animate() {
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
             const posAttr = pGeo.attributes.position;
-            
             for(let i=0; i < particlesCount; i++) {
-                // The "Wisp" Effect: Subtle expansion and contraction
-                const wave = Math.sin(time * 0.5 + i) * 15;
+                const wave = Math.sin(time * 0.4 + i) * 12;
                 posAttr.array[i*3] = originalPositions[i*3] + wave * Math.sin(i);
                 posAttr.array[i*3+1] = originalPositions[i*3+1] + wave * Math.cos(i);
             }
             posAttr.needsUpdate = true;
-            
             swarm.rotation.y += 0.002;
-            swarm.rotation.x += 0.001;
             renderer.render(scene, camera);
         }
         animate();
