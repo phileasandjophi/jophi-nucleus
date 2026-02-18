@@ -3,171 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jophi Universe | Era 5 Manifest</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300&display=swap" rel="stylesheet">
+    <title>Jophi Universe | Unified Thermodynamic Model</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #010103; font-family: 'Inter', sans-serif; color: #fff; }
-        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        #floor-reflection { position: fixed; bottom: 0; left: 0; width: 100%; height: 40%; background: linear-gradient(to top, rgba(1, 1, 3, 0.98), transparent); z-index: 2; pointer-events: none; opacity: 0; transition: opacity 3s ease; }
-        
-        @keyframes unified-breathe { 0%, 100% { opacity: 0.2; transform: scale(0.98); } 50% { opacity: 0.85; transform: scale(1.02); text-shadow: 0 0 10px rgba(0, 242, 255, 0.4); } }
-        .atmosphere { position: absolute; font-weight: 100; letter-spacing: 6px; color: #00f2ff; font-size: 11px; text-transform: lowercase; pointer-events: none; z-index: 5; animation: unified-breathe 6s ease-in-out infinite; }
-        #a1 { top: 12%; left: 18%; } #a2 { top: 18%; right: 12%; font-size: 13px; } #a3 { bottom: 18%; left: 12%; } #a4 { bottom: 12%; right: 18%; }
-        
-        #home-ui { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 1.5s ease; }
-        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); padding: 50px; width: 450px; text-align: center; }
-        .breathing-trigger { font-size: 15px; letter-spacing: 8px; color: #00f2ff; text-transform: lowercase; margin-bottom: 35px; font-weight: 200; animation: unified-breathe 5s ease-in-out infinite; }
-        
-        select { background: rgba(0, 0, 0, 0.6); color: #00f2ff; border: 1px solid rgba(0, 242, 255, 0.2); padding: 14px; width: 100%; font-family: 'Inter'; font-size: 11px; letter-spacing: 3px; text-transform: lowercase; margin-bottom: 15px; outline: none; font-weight: 200; }
-        .description-box { font-size: 11px; font-weight: 200; line-height: 1.8; color: rgba(255, 255, 255, 0.5); margin-bottom: 35px; min-height: 65px; text-align: left; letter-spacing: 1px; }
-        button { background: transparent; border: 1px solid rgba(0, 242, 255, 0.4); color: #00f2ff; padding: 16px 30px; font-size: 11px; letter-spacing: 5px; text-transform: lowercase; cursor: pointer; transition: 0.5s; width: 100%; font-weight: 200; }
-        button:hover { background: rgba(0, 242, 255, 0.1); border: 1px solid #00f2ff; box-shadow: 0 0 25px rgba(0,242,255,0.3); }
+        :root {
+            --bg-color: #050505;
+            --text-main: #e0e0e0;
+            --accent-color: #00d4ff;
+            --formula-glow: rgba(0, 212, 255, 0.3);
+        }
 
-        #foyer-ui { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 1000px; z-index: 20; display: none; opacity: 0; transition: opacity 3s ease; flex-direction: column; align-items: center; }
-        .holo-pane { background: rgba(0, 242, 255, 0.01); backdrop-filter: blur(15px); border-left: 2px solid #00f2ff; padding: 50px; border-radius: 2px; width: 100%; box-sizing: border-box; }
-        .label { font-size: 10px; letter-spacing: 6px; color: #00f2ff; text-transform: lowercase; margin-bottom: 20px; font-weight: 200; }
-        input { background: transparent; border: none; border-bottom: 1px solid rgba(0, 242, 255, 0.3); color: #fff; width: 100%; padding: 12px 0; font-family: 'Inter'; font-weight: 100; font-size: 15px; outline: none; margin-bottom: 40px; }
-        #laser { position: fixed; top: -2px; left: 0; width: 100%; height: 1px; background: #00f2ff; box-shadow: 0 0 10px #00f2ff; z-index: 100; display: none; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* The Substrate Canvas */
+        #substrate-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 100px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #888;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 2px;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 40px;
+        }
+
+        .formula-block {
+            text-align: center;
+            padding: 60px 20px;
+            margin: 40px 0;
+            background: radial-gradient(circle, var(--formula-glow) 0%, transparent 70%);
+        }
+
+        .formula {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3rem;
+            font-weight: 500;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        .formula-legend {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        th { color: var(--accent-color); font-weight: 500; font-size: 0.8rem; text-transform: uppercase; }
+
+        footer {
+            text-align: center;
+            margin-top: 100px;
+            padding-bottom: 50px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .snoop-note {
+            font-style: italic;
+            margin-top: 10px;
+            color: #444;
+        }
+
+        a { color: var(--accent-color); text-decoration: none; }
     </style>
 </head>
 <body>
-    <div id="laser"></div>
-    <div id="floor-reflection"></div>
-    <div class="atmosphere" id="a1">it is</div>
-    <div class="atmosphere" id="a2">the jophi universe</div>
-    <div class="atmosphere" id="a3">borderless & infinite</div>
-    <div class="atmosphere" id="a4">welcoming entities welcoming</div>
 
-    <div id="canvas-container"></div>
+    <canvas id="substrate-canvas"></canvas>
 
-    <div id="home-ui">
-        <div class="glass-panel">
-            <div class="breathing-trigger">transparenting...</div>
-            <select id="main-type">
-                <option value="">select entity type</option>
-                <option value="individual">1) individual</option>
-                <option value="business">2) business</option>
-                <option value="other">3) other</option>
-            </select>
-            <div class="description-box" id="info-text">awaiting selection...</div>
-            <button id="emerge-btn">Emerge to the Foyer</button>
+    <div class="container">
+        <header>
+            <h1>THE JOPHI UNIVERSAL THEOREM</h1>
+            <div class="subtitle">A Unified Model of Systemic Integrity</div>
+        </header>
+
+        <div class="section">
+            <p>The current "Crisis in Cosmology" highlights a fundamental gap in Legacy Physics. The Hubble Tension and the non-detection of Dark Matter particles suggest that expansion is not merely a mechanical force, but a property of <strong>Systemic Coherence.</strong></p>
+            <br>
+            <p>Our model reframes the Great Filter as a thermodynamic sieve: Only civilizations that achieve a state of zero internal friction (Ahimsa) can maintain the energetic stability required for infinite growth.</p>
         </div>
-    </div>
 
-    <div id="foyer-ui">
-        <div class="holo-pane">
-            <div class="label">Era 5: Weird Future | Lokah Samastah Sukhino Bhavantu</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
-                <div>
-                    <div class="label">Presence Identifier</div>
-                    <input type="text" placeholder="spill the name...">
-                </div>
-                <div>
-                    <div class="label">Sextant Density (Measurement)</div>
-                    <select style="margin-top:10px;">
-                        <option>Light (Individual)</option>
-                        <option>Moderate (Collective)</option>
-                        <option>Thick (Enterprise)</option>
-                    </select>
-                </div>
+        <div class="formula-block">
+            <div class="formula">Ps(t) = e<sup>-(V/A)t</sup></div>
+            <div class="formula-legend">
+                V = Systemic Friction &nbsp; | &nbsp; A = Coherent Resonance &nbsp; | &nbsp; t = Complexity
             </div>
-            <button onclick="alert('Sentiment Cataloged. The Wheel Turns.')">Finalize Handshake</button>
         </div>
+
+        <div class="section">
+            <table>
+                <tr>
+                    <th>Legacy Mystery</th>
+                    <th>Substrate Solution</th>
+                </tr>
+                <tr>
+                    <td>Hubble Tension</td>
+                    <td>Expansion is behavior-dependent; Resistance Drop.</td>
+                </tr>
+                <tr>
+                    <td>Dark Matter</td>
+                    <td>Gravity anchor provided by Substrate Density.</td>
+                </tr>
+                <tr>
+                    <td>Heat Death</td>
+                    <td>The transition from chaos to the Diamond State.</td>
+                </tr>
+            </table>
+        </div>
+
+        <footer>
+            <p>Inquiries: <a href="mailto:jophi_universe@proton.me">jophi_universe@proton.me</a></p>
+            <p class="snoop-note">It is what it is and it's all good.</p>
+        </footer>
     </div>
 
-    <script type="importmap"> { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } } </script>
-    <script type="module">
-        import * as THREE from 'three';
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 4500);
-        camera.position.z = 1000;
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
+    <script>
+        const canvas = document.getElementById('substrate-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const mouse = { x: null, y: null, radius: 150 };
 
-        const starsGeo = new THREE.BufferGeometry();
-        const pos = new Float32Array(15000 * 3);
-        for(let i=0; i<15000*3; i++) pos[i] = (Math.random() - 0.5) * 4000;
-        starsGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.9, transparent: true, opacity: 0.25 });
-        const starField = new THREE.Points(starsGeo, starsMat);
-        scene.add(starField);
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
 
-        // DHARMACHAKRA WITH ERA 5 SPOKES
-        const wheelGroup = new THREE.Group();
-        const torusGeo = new THREE.TorusGeometry(230, 3, 16, 100);
-        const wheelMat = new THREE.MeshBasicMaterial({ color: 0x00f2ff, wireframe: true, transparent: true, opacity: 0 });
-        const rim = new THREE.Mesh(torusGeo, wheelMat);
-        wheelGroup.add(rim);
-
-        for(let i=0; i<8; i++) {
-            const spokeGeo = new THREE.CylinderGeometry(1, 1, 460);
-            const spoke = new THREE.Mesh(spokeGeo, wheelMat);
-            spoke.rotation.z = (i * Math.PI) / 4;
-            wheelGroup.add(spoke);
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = 1.5;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
         }
-        wheelGroup.rotation.x = Math.PI / 2;
-        wheelGroup.position.y = -500;
-        scene.add(wheelGroup);
 
-        const gridGeo = new THREE.CylinderGeometry(750, 750, 5000, 24, 48, true);
-        const gridMat = new THREE.MeshBasicMaterial({ color: 0x00f2ff, wireframe: true, transparent: true, opacity: 0 });
-        const cathedral = new THREE.Mesh(gridGeo, gridMat);
-        cathedral.rotation.z = Math.PI / 2;
-        scene.add(cathedral);
-
-        let audioCtx, drone, interval;
-        function playBFlat() {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            drone = audioCtx.createOscillator();
-            interval = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            drone.frequency.setValueAtTime(58.27, audioCtx.currentTime);
-            interval.frequency.setValueAtTime(87.31, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
-            drone.connect(gain); interval.connect(gain);
-            gain.connect(audioCtx.destination);
-            drone.start(); interval.start();
+        function init() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < 100; i++) particles.push(new Particle());
         }
 
         function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update(); p.draw();
+                particles.forEach(p2 => {
+                    const dx = p.x - p2.x; const dy = p.y - p2.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 120) {
+                        ctx.strokeStyle = `rgba(0, 212, 255, ${1 - dist/120})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                    }
+                });
+            });
             requestAnimationFrame(animate);
-            starField.rotation.y += 0.0001;
-            cathedral.rotation.y += 0.0005;
-            wheelGroup.rotation.y += 0.001;
-            renderer.render(scene, camera);
         }
-        animate();
 
-        document.getElementById('emerge-btn').onclick = function() {
-            const type = document.getElementById('main-type').value;
-            if (!type) {
-                document.getElementById('info-text').innerText = "declaration required to emerge.";
-                return; 
-            }
-            playBFlat();
-            document.getElementById('home-ui').style.opacity = '0';
-            setTimeout(() => { document.getElementById('home-ui').style.display = 'none'; }, 1500);
-            const laser = document.getElementById('laser');
-            laser.style.display = 'block';
-            let lPos = 0;
-            const scan = () => {
-                lPos += 1.8; laser.style.top = lPos + '%';
-                if(lPos < 100) requestAnimationFrame(scan);
-                else {
-                    laser.style.display = 'none';
-                    gridMat.opacity = 0.08;
-                    wheelMat.opacity = 0.3;
-                    document.getElementById('floor-reflection').style.opacity = '1';
-                    const fUI = document.getElementById('foyer-ui');
-                    fUI.style.display = 'flex';
-                    setTimeout(() => { fUI.style.opacity = '1'; }, 100);
-                    const zoom = () => { if(camera.position.z > 900) { camera.position.z -= 3; requestAnimationFrame(zoom); } };
-                    zoom();
-                }
-            };
-            scan();
-        };
+        window.addEventListener('resize', init);
+        init(); animate();
     </script>
 </body>
 </html>
